@@ -78,7 +78,7 @@ integrate jib:
     - |
       mkdir -p ~/.m2
       /opt/mvn-settings-gen ${AUTO_DEVOPS_MAVEN_SETTINGS_ARGS} > ~/.m2/settings.xml
-    - ci build --recipe com.google.cloud.tools.jib-maven-plugin
+    - ./ci build --recipe com.google.cloud.tools.jib-maven-plugin
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: never
