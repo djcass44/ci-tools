@@ -1,0 +1,55 @@
+build:
+  com.google.cloud.tools.jib-maven-plugin:
+    dockercfg: true
+    env: {}
+    command: mvn
+    args:
+      - compile
+      - com.google.cloud.tools:jib-maven-plugin:3.3.1:build
+      - -Djib.from.image={{ .Image.Parent }}
+      - -Djib.to.image={{ .Image.Name }}
+      - -Djib.to.auth.username={{ .Image.Username }}
+      - -Djib.to.auth.password={{ .Image.Password }}
+      - -Djib.to.tags="{{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}"
+      - -Djib.container.format=OCI
+      - -Djib.container.user="1001:0"
+      - -Djib.baseImageCache="{{ .Root }}/.cache"
+      - -Djib.applicationCache="{{ .Root }}/.cache"
+  com.github.google.ko:
+    dockercfg: false
+    env:
+      KO_DEFAULTBASE_IMAGE: {{ .Image.Parent }}
+      KO_DOCKER_REPO: {{ .Image.Name }}
+      KOCACHE: {{ .Root }}/.cache
+      GOFLAGS: -buildvcs=false
+    command: ko
+    args:
+      - build
+      - --sbom=none
+      - --bare
+      - -t
+      - "{{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}"
+      - {{ .Context }}
+  com.github.moby.buildkit:
+    dockercfg: true
+    env:
+      BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
+    command: buildctl-daemonless.sh
+    args:
+      - build
+      - --frontend
+      - dockerfile.v0
+      - --local
+      - context="{{ .Context }}"
+      - --local
+      - dockerfile="{{ .Dockerfile.File }}"
+      - --export-cache
+      - type=local,dest="{{ .Root }}/.cache"
+      - --import-cache
+      - type=local,dest="{{ .Root }}/.cache"
+      {{- range $i, $e := .FQTags }}
+      - --opt "target={{ $e }}"
+      {{- end }}
+      {{- range $i, $e := .Dockerfile.Args }}
+      - --opt "build-arg={{ $e }}"
+      {{- end }}
