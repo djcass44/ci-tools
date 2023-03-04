@@ -1,8 +1,8 @@
 package ctx
 
 import (
+	"github.com/Netflix/go-env"
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
-	"github.com/kelseyhightower/envconfig"
 	"os"
 )
 
@@ -15,7 +15,7 @@ func GetContext() (v1.BuildContext, error) {
 	// check if we're in GitLab CI
 	if os.Getenv("GITLAB_CI") != "" {
 		context = new(GitLabContext)
-		if err := envconfig.Process("", &context); err != nil {
+		if _, err := env.UnmarshalFromEnviron(&context); err != nil {
 			return v1.BuildContext{}, err
 		}
 	}

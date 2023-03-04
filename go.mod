@@ -3,10 +3,10 @@ module github.com/djcass44/ci-tools
 go 1.20
 
 require (
+	github.com/Netflix/go-env v0.0.0-20220526054621-78278af1949d
 	github.com/anchore/stereoscope v0.0.0-20230301191755-abfb374a1122
 	github.com/anchore/syft v0.74.0
 	github.com/google/go-containerregistry v0.13.0
-	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/spf13/cobra v1.6.1
 	github.com/stretchr/testify v1.8.2
 	gopkg.in/yaml.v3 v3.0.1

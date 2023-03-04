@@ -7,18 +7,18 @@ import (
 )
 
 type GitLabContext struct {
-	ProjectDir  string `envconfig:"CI_PROJECT_DIR"`
-	ProjectPath string `envconfig:"PROJECT_PATH"`
+	ProjectDir  string `env:"CI_PROJECT_DIR"`
+	ProjectPath string `env:"PROJECT_PATH"`
 
-	Registry         string `envconfig:"CI_REGISTRY"`
-	RegistryImage    string `envconfig:"CI_REGISTRY_IMAGE"`
-	RegistryUser     string `envconfig:"CI_REGISTRY_USER"`
-	RegistryPassword string `envconfig:"CI_REGISTRY_PASSWORD"`
+	Registry         string `env:"CI_REGISTRY"`
+	RegistryImage    string `env:"CI_REGISTRY_IMAGE"`
+	RegistryUser     string `env:"CI_REGISTRY_USER"`
+	RegistryPassword string `env:"CI_REGISTRY_PASSWORD"`
 
-	CommitBranch   string `envconfig:"CI_COMMIT_BRANCH"`
-	CommitTag      string `envconfig:"CI_COMMIT_TAG"`
-	CommitSha      string `envconfig:"CI_COMMIT_SHA"`
-	CommitShortSha string `envconfig:"CI_COMMIT_SHORT_SHA"`
+	CommitBranch   string `env:"CI_COMMIT_BRANCH"`
+	CommitTag      string `env:"CI_COMMIT_TAG"`
+	CommitSha      string `env:"CI_COMMIT_SHA"`
+	CommitShortSha string `env:"CI_COMMIT_SHORT_SHA"`
 }
 
 func (c *GitLabContext) Normalise() v1.BuildContext {
