@@ -10,7 +10,7 @@ stages:
     - when: on_success
 
 build binary:
-  stage: base
+  stage: build
   needs: []
   dependencies: []
   image: registry.gitlab.com/av1o/base-images/go-ubuntu:1.20-rolling
