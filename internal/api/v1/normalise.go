@@ -40,6 +40,7 @@ func (c *BuildContext) Normalise() {
 	for i := range fqTags {
 		fqTags[i] = fmt.Sprintf("%s:%s", c.Image.Name, c.Tags[i])
 	}
+	c.FQTags = fqTags
 }
 
 func (c *BuildContext) DockerCFG() string {
