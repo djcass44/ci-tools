@@ -35,9 +35,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	skipDockerCfg, _ := cmd.Flags().GetBool(flagSkipDockerCFG)
 	arch, _ := cmd.Flags().GetString(flagArchetype)
 	tpl, _ := cmd.Flags().GetString(flagRecipeTemplate)
-	if tpl == "" {
-		tpl = "recipes.tpl.yaml"
-	} else {
+	if tpl != "" {
 		log.Printf("using custom recipe template: %s", tpl)
 	}
 
