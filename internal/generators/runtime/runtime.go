@@ -2,14 +2,15 @@ package runtime
 
 import (
 	"fmt"
-	v1 "github.com/djcass44/ci-tools/internal/api/v1"
+	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
-func Execute(r *v1.BuildRecipe) error {
+func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe) error {
 	envArgs := make([]string, len(r.Args))
 	for i := range r.Args {
 		envArgs[i] = os.ExpandEnv(r.Args[i])
@@ -23,6 +24,7 @@ func Execute(r *v1.BuildRecipe) error {
 	// run the command
 	log.Printf("running command: [%s %s] with env: [%s]", r.Command, strings.Join(envArgs, " "), strings.Join(env, " "))
 	cmd := exec.Command(r.Command, envArgs...) //nolint:gosec
+	cmd.Dir = filepath.Join(ctx.Root, ctx.Context)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = append(cmd.Environ(), env...)

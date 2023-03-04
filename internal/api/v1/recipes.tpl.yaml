@@ -1,6 +1,7 @@
 build:
   com.google.cloud.tools.jib-maven-plugin:
     dockercfg: true
+    cd: true
     env: {}
     command: mvn
     args:
@@ -16,7 +17,7 @@ build:
       - -Djib.baseImageCache="{{ .Root }}/.cache"
       - -Djib.applicationCache="{{ .Root }}/.cache"
   com.github.google.ko:
-    dockercfg: false
+    cd: true
     env:
       KO_DEFAULTBASE_IMAGE: {{ .Image.Parent }}
       KO_DOCKER_REPO: {{ .Image.Name }}

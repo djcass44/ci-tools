@@ -25,7 +25,7 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 	imagePath := c.RegistryImage
 	// support mono-repos via the PROJECT_PATH env var
 	if c.ProjectPath != "" {
-		imagePath = filepath.Join(imagePath, c.ProjectPath)
+		imagePath = filepath.Join(imagePath, strings.ReplaceAll(c.ProjectPath, "/", "-"))
 	}
 	// collect tags
 	tags := []string{
@@ -43,7 +43,7 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 		Root:    c.ProjectDir,
 		Context: c.ProjectPath,
 		Image: v1.ImageConfig{
-			Name:     c.RegistryImage,
+			Name:     imagePath,
 			Registry: c.Registry,
 			Username: c.RegistryUser,
 			Password: c.RegistryPassword,

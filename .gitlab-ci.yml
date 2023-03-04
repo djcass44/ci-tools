@@ -1,0 +1,40 @@
+stages:
+  - test
+  - build
+  - integrate
+
+.rules: &rules
+  rules:
+    - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+      when: never
+    - when: on_success
+
+build binary:
+  stage: base
+  needs: []
+  dependencies: []
+  image: registry.gitlab.com/av1o/base-images/go-ubuntu:1.20-rolling
+  variables:
+    GOFLAGS: "-buildvcs=false"
+  script:
+    - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ci -a -installsuffix cgo -ldflags '-extldflags "-static"' main.go
+  artifacts:
+    paths:
+      - ci
+  <<: *rules
+
+integrate ko:
+  stage: integrate
+  dependencies:
+    - build binary
+  needs:
+    - build binary
+  variables:
+    PROJECT_PATH: samples/go
+  script:
+    - ./ci build --recipe com.github.google.ko
+  rules:
+    - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+      when: never
+    - when: on_success
+  <<: *rules
