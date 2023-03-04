@@ -33,6 +33,13 @@ func (c *BuildContext) Normalise() {
 	if val := os.Getenv("BUILD_DOCKERFILE"); val != "" {
 		c.Dockerfile.File = val
 	}
+
+	// collect fully-qualified tags
+	// e.g. foo.bar/foo/bar:v1.2.3
+	fqTags := make([]string, len(c.Tags))
+	for i := range fqTags {
+		fqTags[i] = fmt.Sprintf("%s:%s", c.Image.Name, c.Tags[i])
+	}
 }
 
 func (c *BuildContext) DockerCFG() string {
