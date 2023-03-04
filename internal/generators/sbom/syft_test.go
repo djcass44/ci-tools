@@ -12,7 +12,7 @@ import (
 
 func TestExecute(t *testing.T) {
 	tmp := t.TempDir()
-	require.NoError(t, os.MkdirAll(filepath.Join(tmp, ".cache"), 0755))
+	require.NoError(t, os.MkdirAll(filepath.Join(tmp, ".cache"), 0750))
 	err := sbom.Execute(&civ1.BuildContext{
 		Root: tmp,
 		Image: civ1.ImageConfig{
