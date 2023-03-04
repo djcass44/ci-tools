@@ -15,7 +15,7 @@ func GetContext() (v1.BuildContext, error) {
 	// check if we're in GitLab CI
 	if os.Getenv("GITLAB_CI") != "" {
 		context = new(GitLabContext)
-		if _, err := env.UnmarshalFromEnviron(&context); err != nil {
+		if _, err := env.UnmarshalFromEnviron(context); err != nil {
 			return v1.BuildContext{}, err
 		}
 	}
