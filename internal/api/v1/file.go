@@ -5,6 +5,7 @@ import (
 	"gopkg.in/yaml.v3"
 	"html/template"
 	"log"
+	"os"
 	"path/filepath"
 )
 
@@ -26,4 +27,13 @@ func ReadConfiguration(path string, ctx *BuildContext) (*Recipes, error) {
 		return nil, err
 	}
 	return v, nil
+}
+
+func WriteDockerCFG(ctx *BuildContext) error {
+	path := os.Getenv("DOCKER_CONFIG")
+	home, _ := os.UserHomeDir()
+	if path == "" {
+		path = filepath.Join(home, ".docker", "config.json")
+	}
+	return os.WriteFile(path, []byte(ctx.DockerCFG()), 0664)
 }

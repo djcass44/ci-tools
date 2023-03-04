@@ -11,6 +11,7 @@ type GitLabContext struct {
 	ProjectDir  string `envconfig:"CI_PROJECT_DIR"`
 	ProjectPath string `envconfig:"PROJECT_PATH"`
 
+	Registry         string `envconfig:"CI_REGISTRY"`
 	RegistryImage    string `envconfig:"CI_REGISTRY_IMAGE"`
 	RegistryUser     string `envconfig:"CI_REGISTRY_USER"`
 	RegistryPassword string `envconfig:"CI_REGISTRY_PASSWORD"`
@@ -50,6 +51,7 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 		Context: c.ProjectPath,
 		Image: v1.ImageConfig{
 			Name:     c.RegistryImage,
+			Registry: c.Registry,
 			Username: c.RegistryUser,
 			Password: c.RegistryPassword,
 		},

@@ -22,6 +22,7 @@ type BuildContext struct {
 type ImageConfig struct {
 	Parent   string
 	Name     string
+	Registry string
 	Username string
 	Password string
 }

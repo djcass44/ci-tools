@@ -34,3 +34,14 @@ func (c *BuildContext) Normalise() {
 		c.Dockerfile.File = val
 	}
 }
+
+func (c *BuildContext) DockerCFG() string {
+	return fmt.Sprintf(`{
+	"auths": {
+		"%s": {
+			"username": "%s",
+			"password": "%s"
+		}
+	}
+}`, c.Image.Registry, c.Image.Username, c.Image.Password)
+}

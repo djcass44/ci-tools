@@ -16,11 +16,13 @@ var buildCmd = &cobra.Command{
 }
 
 const (
-	flagArchetype = "archetype"
+	flagArchetype      = "archetype"
+	flagRecipeTemplate = "recipe-template"
 )
 
 func init() {
 	buildCmd.Flags().StringP(flagArchetype, "a", "", "application recipe to use")
+	buildCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagArchetype)
@@ -28,6 +30,12 @@ func init() {
 
 func build(cmd *cobra.Command, _ []string) error {
 	arch, _ := cmd.Flags().GetString(flagArchetype)
+	tpl, _ := cmd.Flags().GetString(flagRecipeTemplate)
+	if tpl == "" {
+		tpl = "recipes.tpl.yaml"
+	} else {
+		log.Printf("using custom recipe template: %s", tpl)
+	}
 	log.Printf("running recipe: %s", arch)
 
 	var context ctx.GitLabContext
@@ -37,7 +45,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	bc := context.Normalise()
 	bc.Normalise()
 
-	cfg, err := v1.ReadConfiguration("recipes.tpl.yaml", &bc)
+	cfg, err := v1.ReadConfiguration(tpl, &bc)
 	if err != nil {
 		return err
 	}
@@ -45,7 +53,14 @@ func build(cmd *cobra.Command, _ []string) error {
 	if !ok {
 		return fmt.Errorf("unknown recipe: %s", arch)
 	}
-	log.Printf("%+v", recipe)
+
+	// write OCI credentials file
+	if recipe.DockerCFG {
+		if err := v1.WriteDockerCFG(&bc); err != nil {
+			log.Printf("failed to write dockercfg: %s", err)
+			return err
+		}
+	}
 
 	return nil
 }
