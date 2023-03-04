@@ -13,7 +13,7 @@ build binary:
   stage: build
   needs: []
   dependencies: []
-  image: registry.gitlab.com/av1o/base-images/go-ubuntu:1.20-rolling
+  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.20-rolling
   variables:
     GOFLAGS: "-buildvcs=false"
   script:
@@ -25,14 +25,26 @@ build binary:
 
 integrate ko:
   stage: integrate
+  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.20-rolling
   dependencies:
     - build binary
   needs:
     - build binary
   variables:
     PROJECT_PATH: samples/go
+  cache:
+    paths:
+      - .cache
+    key: ko
   script:
-    - ./ci build --recipe com.github.google.ko
+    - |
+      mkdir -p bin/
+      mv ci bin/
+      export PATH="$PATH:$CI_PROJECT_DIR/bin"
+      
+      wget -qO- "https://github.com/ko-build/ko/releases/download/v0.12.0/ko_0.12.0_Linux_x86_64.tar.gz" | tar -xvz ko
+      install ./ko "$CI_PROJECT_DIR/bin/ko"
+    - ci build --recipe com.github.google.ko
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: never

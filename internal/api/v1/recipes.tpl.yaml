@@ -19,7 +19,7 @@ build:
   com.github.google.ko:
     cd: true
     env:
-      KO_DEFAULTBASE_IMAGE: {{ .Image.Parent }}
+      KO_DEFAULTBASEIMAGE: {{ .Image.Parent }}
       KO_DOCKER_REPO: {{ .Image.Name }}
       KOCACHE: {{ .Root }}/.cache
       GOFLAGS: -buildvcs=false
