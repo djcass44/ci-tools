@@ -5,7 +5,6 @@ import (
 	"github.com/djcass44/ci-tools/internal/api/ctx"
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/djcass44/ci-tools/internal/runtime"
-	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
 	"log"
 )
@@ -19,11 +18,13 @@ var buildCmd = &cobra.Command{
 const (
 	flagArchetype      = "archetype"
 	flagRecipeTemplate = "recipe-template"
+	flagSkipDockerCFG  = "skip-docker-cfg"
 )
 
 func init() {
 	buildCmd.Flags().StringP(flagArchetype, "a", "", "application recipe to use")
 	buildCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
+	buildCmd.Flags().Bool(flagSkipDockerCFG, false, "skip generating the registry credentials file even if requested by a recipe")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagArchetype)
@@ -31,6 +32,7 @@ func init() {
 
 func build(cmd *cobra.Command, _ []string) error {
 	// read flags
+	skipDockerCfg, _ := cmd.Flags().GetBool(flagSkipDockerCFG)
 	arch, _ := cmd.Flags().GetString(flagArchetype)
 	tpl, _ := cmd.Flags().GetString(flagRecipeTemplate)
 	if tpl == "" {
@@ -42,14 +44,12 @@ func build(cmd *cobra.Command, _ []string) error {
 	// figure out what we need to do
 	log.Printf("running recipe: %s", arch)
 
-	var context ctx.GitLabContext
-	if err := envconfig.Process("", &context); err != nil {
+	context, err := ctx.GetContext()
+	if err != nil {
 		return err
 	}
-	bc := context.Normalise()
-	bc.Normalise()
 
-	cfg, err := v1.ReadConfiguration(tpl, &bc)
+	cfg, err := v1.ReadConfiguration(tpl, &context)
 	if err != nil {
 		return err
 	}
@@ -59,8 +59,8 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// write OCI credentials file
-	if recipe.DockerCFG {
-		if err := v1.WriteDockerCFG(&bc); err != nil {
+	if recipe.DockerCFG && !skipDockerCfg {
+		if err := v1.WriteDockerCFG(&context); err != nil {
 			log.Printf("failed to write dockercfg: %s", err)
 			return err
 		}
