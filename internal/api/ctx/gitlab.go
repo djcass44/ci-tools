@@ -30,9 +30,9 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 	}
 	// collect tags
 	tags := []string{
-		"latest",
 		c.CommitSha,
 		c.CommitShortSha,
+		"latest",
 	}
 	if c.CommitTag != "" {
 		tags = append(tags, c.CommitTag)

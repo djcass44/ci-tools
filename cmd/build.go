@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"github.com/djcass44/ci-tools/internal/api/ctx"
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
-	"github.com/djcass44/ci-tools/internal/runtime"
+	"github.com/djcass44/ci-tools/internal/generators/runtime"
+	"github.com/djcass44/ci-tools/internal/generators/sbom"
 	"github.com/spf13/cobra"
 	"log"
+	"os"
 )
 
 var buildCmd = &cobra.Command{
@@ -19,12 +21,14 @@ const (
 	flagArchetype      = "archetype"
 	flagRecipeTemplate = "recipe-template"
 	flagSkipDockerCFG  = "skip-docker-cfg"
+	flagSkipSBOM       = "skip-sbom"
 )
 
 func init() {
 	buildCmd.Flags().StringP(flagArchetype, "a", "", "application recipe to use")
 	buildCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
 	buildCmd.Flags().Bool(flagSkipDockerCFG, false, "skip generating the registry credentials file even if requested by a recipe")
+	buildCmd.Flags().Bool(flagSkipSBOM, false, "skip generating the SBOM")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagArchetype)
@@ -33,6 +37,7 @@ func init() {
 func build(cmd *cobra.Command, _ []string) error {
 	// read flags
 	skipDockerCfg, _ := cmd.Flags().GetBool(flagSkipDockerCFG)
+	skipSBOM, _ := cmd.Flags().GetBool(flagSkipSBOM)
 	arch, _ := cmd.Flags().GetString(flagArchetype)
 	tpl, _ := cmd.Flags().GetString(flagRecipeTemplate)
 	if tpl != "" {
@@ -57,7 +62,9 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// write OCI credentials file
-	if recipe.DockerCFG && !skipDockerCfg {
+	// but make sure we don't accidentally overwrite it unless
+	// we intend to
+	if recipe.DockerCFG && !skipDockerCfg && os.Getenv("CI") != "" {
 		if err := v1.WriteDockerCFG(&context); err != nil {
 			log.Printf("failed to write dockercfg: %s", err)
 			return err
@@ -65,5 +72,16 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// run the command
-	return runtime.Execute(&recipe)
+	if err := runtime.Execute(&recipe); err != nil {
+		return err
+	}
+
+	// generate the SBOM
+	if !skipSBOM {
+		if err := sbom.Execute(&context); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }

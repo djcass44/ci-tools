@@ -46,5 +46,5 @@ func WriteDockerCFG(ctx *BuildContext) error {
 	if path == "" {
 		path = filepath.Join(home, ".docker", "config.json")
 	}
-	return os.WriteFile(path, []byte(ctx.DockerCFG()), 0664)
+	return os.WriteFile(path, []byte(ctx.DockerCFG()), 0644)
 }
