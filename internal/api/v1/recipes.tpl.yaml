@@ -18,6 +18,7 @@ build:
       - -Djib.applicationCache="{{ .Root }}/.cache"
   com.github.google.ko:
     cd: true
+    dockercfg: true
     env:
       KO_DEFAULTBASEIMAGE: {{ .Image.Parent }}
       KO_DOCKER_REPO: {{ .Image.Name }}
