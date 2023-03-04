@@ -3,6 +3,7 @@ package v1
 type BuildRecipe struct {
 	DockerCFG bool              `yaml:"dockercfg,omitempty"`
 	Env       map[string]string `yaml:"env,omitempty"`
+	Command   string            `yaml:"command"`
 	Args      []string          `yaml:"args,omitempty"`
 }
 

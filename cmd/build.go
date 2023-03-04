@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/djcass44/ci-tools/internal/api/ctx"
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/djcass44/ci-tools/internal/runtime"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/spf13/cobra"
 	"log"
@@ -29,6 +30,7 @@ func init() {
 }
 
 func build(cmd *cobra.Command, _ []string) error {
+	// read flags
 	arch, _ := cmd.Flags().GetString(flagArchetype)
 	tpl, _ := cmd.Flags().GetString(flagRecipeTemplate)
 	if tpl == "" {
@@ -36,6 +38,8 @@ func build(cmd *cobra.Command, _ []string) error {
 	} else {
 		log.Printf("using custom recipe template: %s", tpl)
 	}
+
+	// figure out what we need to do
 	log.Printf("running recipe: %s", arch)
 
 	var context ctx.GitLabContext
@@ -62,5 +66,6 @@ func build(cmd *cobra.Command, _ []string) error {
 		}
 	}
 
-	return nil
+	// run the command
+	return runtime.Execute(&recipe)
 }
