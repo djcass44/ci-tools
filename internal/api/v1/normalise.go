@@ -41,6 +41,7 @@ func (c *BuildContext) Normalise() {
 		fqTags[i] = fmt.Sprintf("%s:%s", c.Image.Name, c.Tags[i])
 	}
 	c.FQTags = fqTags
+	c.Image.Parent = os.Getenv("BUILD_IMAGE_PARENT")
 }
 
 func (c *BuildContext) DockerCFG() string {

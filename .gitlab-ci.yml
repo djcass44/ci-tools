@@ -36,6 +36,10 @@ integrate ko:
     paths:
       - .cache
     key: ko
+  artifacts:
+    expose_as: SBOM
+    paths:
+      - "sbom.cdx.json"
   script:
     - |
       mkdir -p bin/
@@ -45,6 +49,36 @@ integrate ko:
       wget -qO- "https://github.com/ko-build/ko/releases/download/v0.12.0/ko_0.12.0_Linux_x86_64.tar.gz" | tar -xvz ko
       install ./ko "$CI_PROJECT_DIR/bin/ko"
     - ci build --recipe com.github.google.ko
+  rules:
+    - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+      when: never
+    - when: on_success
+  <<: *rules
+
+integrate jib:
+  stage: integrate
+  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/maven:19
+  dependencies:
+    - build binary
+  needs:
+    - build binary
+  variables:
+    PROJECT_PATH: samples/java-maven
+    AUTO_DEVOPS_MAVEN_SETTINGS_ARGS: "-mirror=prism=Prism=https://prism.v2.dcas.dev/api/v1/maven/-/=central"
+    BUILD_IMAGE_PARENT: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/tomcat-native:19
+  cache:
+    paths:
+      - .cache
+    key: mvn
+  artifacts:
+    expose_as: SBOM
+    paths:
+      - "sbom.cdx.json"
+  script:
+    - |
+      mkdir -p ~/.m2
+      /opt/mvn-settings-gen ${AUTO_DEVOPS_MAVEN_SETTINGS_ARGS} > ~/.m2/settings.xml
+    - ci build --recipe com.google.cloud.tools.jib-maven-plugin
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: never
