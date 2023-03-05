@@ -24,7 +24,13 @@ func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe) error {
 	// run the command
 	log.Printf("running command: [%s %s] with env: [%s]", r.Command, strings.Join(envArgs, " "), strings.Join(env, " "))
 	cmd := exec.Command(r.Command, envArgs...) //nolint:gosec
-	cmd.Dir = filepath.Join(ctx.Root, ctx.Context)
+	// only change directories if
+	// the command requires it
+	if r.CD {
+		cmd.Dir = filepath.Join(ctx.Root, ctx.Context)
+	} else {
+		cmd.Dir = ctx.Root
+	}
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Env = append(cmd.Environ(), env...)
