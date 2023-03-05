@@ -16,6 +16,7 @@ build:
       - -Djib.container.user=1001:0
       - -Djib.baseImageCache={{ .Root }}/.cache
       - -Djib.applicationCache={{ .Root }}/.cache
+      - -Dproject.build.outputTimestamp=2023-01-01T00:00:00Z
   com.github.google.ko:
     cd: true
     dockercfg: true

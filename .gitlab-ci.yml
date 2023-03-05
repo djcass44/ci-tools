@@ -84,3 +84,30 @@ integrate jib:
       when: never
     - when: on_success
   <<: *rules
+
+integrate buildkit:
+  stage: integrate
+  image: harbor.dcas.dev/docker.io/moby/buildkit:v0.11.3-rootless
+  dependencies:
+    - build binary
+  needs:
+    - build binary
+  variables:
+    PROJECT_PATH: samples/python
+    KUBERNETES_POD_ANNOTATIONS_1: "container.apparmor.security.beta.kubernetes.io/build=unconfined"
+    KUBERNETES_POD_ANNOTATIONS_2: "container.seccomp.security.alpha.kubernetes.io/build=unconfined"
+  cache:
+    paths:
+      - .cache
+    key: buildkit
+  artifacts:
+    expose_as: SBOM
+    paths:
+      - "sbom.cdx.json"
+  script:
+    - ./ci build --recipe com.github.moby.buildkit
+  rules:
+    - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+      when: never
+    - when: on_success
+  <<: *rules

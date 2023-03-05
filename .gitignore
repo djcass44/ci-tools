@@ -3,3 +3,4 @@
 .fleet
 *.iml
 .cache/
+venv/
