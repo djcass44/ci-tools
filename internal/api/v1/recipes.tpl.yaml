@@ -51,13 +51,11 @@ build:
       - filename={{ .Dockerfile.File }}
       {{- end }}
       - --export-cache
-      - type=local,dest={{ .Root }}/.cache
+      - type=local,dest={{ .Root }}/.cache,ignore-error=true
       - --import-cache
       - type=local,src={{ .Root }}/.cache
-      {{- range $i, $e := .FQTags }}
-      - --opt
-      - target={{ $e }}
-      {{- end }}
+      - --output
+      - type=image,\"{{ range $i, $e := .FQTags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}\",push=true
       {{- range $i, $e := .Dockerfile.Args }}
       - --opt
       - build-arg={{ $e }}
