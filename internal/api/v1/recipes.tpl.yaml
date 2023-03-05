@@ -45,7 +45,11 @@ build:
       - --local
       - context={{ .Context }}
       - --local
-      - dockerfile={{ .Root }}/{{ .Context }}/{{ .Dockerfile.File }}
+      - dockerfile={{ .Context }}/
+      {{- if and (.Dockerfile.File) (ne .Dockerfile.File "Dockerfile") }}
+      - --opt
+      - filename={{ .Dockerfile.File }}
+      {{- end }}
       - --export-cache
       - type=local,dest={{ .Root }}/.cache
       - --import-cache
