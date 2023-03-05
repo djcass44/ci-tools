@@ -51,8 +51,10 @@ build:
       - --import-cache
       - type=local,dest={{ .Root }}/.cache
       {{- range $i, $e := .FQTags }}
-      - --opt target={{ $e }}
+      - --opt
+      - target={{ $e }}
       {{- end }}
       {{- range $i, $e := .Dockerfile.Args }}
-      - --opt build-arg={{ $e }}
+      - --opt
+      - build-arg={{ $e }}
       {{- end }}
