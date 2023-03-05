@@ -55,7 +55,7 @@ build:
       - --import-cache
       - type=local,src={{ .Root }}/.cache
       - --output
-      - type=image,\"{{ range $i, $e := .FQTags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}\",push=true
+      - type=image,"name={{ range $i, $e := .FQTags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}",push=true
       {{- range $i, $e := .Dockerfile.Args }}
       - --opt
       - build-arg={{ $e }}
