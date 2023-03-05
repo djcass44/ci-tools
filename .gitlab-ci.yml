@@ -32,6 +32,7 @@ integrate ko:
     - build binary
   variables:
     PROJECT_PATH: samples/go
+    BUILD_IMAGE_PARENT: harbor.dcas.dev/gcr.io/distroless/static-debian11:nonroot
   cache:
     paths:
       - .cache

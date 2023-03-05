@@ -53,7 +53,7 @@ build:
       - --export-cache
       - type=local,dest={{ .Root }}/.cache
       - --import-cache
-      - type=local,dest={{ .Root }}/.cache
+      - type=local,src={{ .Root }}/.cache
       {{- range $i, $e := .FQTags }}
       - --opt
       - target={{ $e }}
