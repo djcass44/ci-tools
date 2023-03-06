@@ -1,6 +1,7 @@
 package slsa_test
 
 import (
+	"github.com/anchore/packageurl-go"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/djcass44/ci-tools/internal/generators/slsa"
 	"github.com/stretchr/testify/assert"
@@ -30,6 +31,7 @@ func TestExecute(t *testing.T) {
 			Ref:       "v1.2.3",
 		},
 		StartTime: "2021-11-05T20:12:38Z",
+		Provider:  packageurl.TypeGithub,
 	})
 	assert.NoError(t, err)
 
