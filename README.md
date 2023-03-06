@@ -32,6 +32,7 @@ Command-line arguments:
 * `--recipe-template` - (*optional*) provide a custom recipe template file
 * `--skip-docker-cfg` - (*optional*) disables the creation of the OCI registry credentials file, even if requested by a recipe
 * `--skip-sbom` - (*optional*) disables the creation of the Software Bill of Materials (SBOM) file
+* `--skip-slsa` - (*optional*) disables the creation of SLSA provenance
 
 Environment variables:
 * `BUILD_IMAGE_PARENT` - the container image to use for the application runtime
