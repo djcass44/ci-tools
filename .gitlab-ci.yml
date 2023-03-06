@@ -49,7 +49,7 @@ integrate ko:
       
       wget -qO- "https://github.com/ko-build/ko/releases/download/v0.12.0/ko_0.12.0_Linux_x86_64.tar.gz" | tar -xvz ko
       install ./ko "$CI_PROJECT_DIR/bin/ko"
-    - ci build --recipe com.github.google.ko
+    - ci build --recipe com.github.google.ko --cosign-verify-key="$CI_PROJECT_DIR/internal/generators/sign/testdata/distroless.pub"
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: never
@@ -79,7 +79,7 @@ integrate jib:
     - |
       mkdir -p ~/.m2
       /opt/mvn-settings-gen ${AUTO_DEVOPS_MAVEN_SETTINGS_ARGS} > ~/.m2/settings.xml
-    - ./ci build --recipe com.google.cloud.tools.jib-maven-plugin
+    - ./ci build --recipe com.google.cloud.tools.jib-maven-plugin --skip-cosign-verify=true
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: never
