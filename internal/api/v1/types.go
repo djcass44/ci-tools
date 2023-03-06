@@ -13,16 +13,27 @@ type Recipes struct {
 }
 
 type BuildContext struct {
+	Builder    string
+	BuildID    string
 	Root       string
 	Context    string
 	Image      ImageConfig
 	Tags       []string
 	FQTags     []string
 	Dockerfile DockerfileConfig
+	Repo       BuildRepo
+	StartTime  string
+}
+
+type BuildRepo struct {
+	URL       string
+	CommitSha string
+	Ref       string
 }
 
 type ImageConfig struct {
 	Parent   string
+	Base     string
 	Name     string
 	Registry string
 	Username string

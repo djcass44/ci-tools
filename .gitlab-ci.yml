@@ -38,9 +38,9 @@ integrate ko:
       - .cache
     key: ko
   artifacts:
-    expose_as: SBOM
     paths:
-      - "sbom.cdx.json"
+      - sbom.cdx.json
+      - provenance.slsa.json
   script:
     - |
       mkdir -p bin/
@@ -72,9 +72,9 @@ integrate jib:
       - .cache
     key: mvn
   artifacts:
-    expose_as: SBOM
     paths:
-      - "sbom.cdx.json"
+      - sbom.cdx.json
+      - provenance.slsa.json
   script:
     - |
       mkdir -p ~/.m2
@@ -102,9 +102,9 @@ integrate buildkit:
       - .cache
     key: buildkit
   artifacts:
-    expose_as: SBOM
     paths:
-      - "sbom.cdx.json"
+      - sbom.cdx.json
+      - provenance.slsa.json
   script:
     - ./ci build --recipe com.github.moby.buildkit
   rules:

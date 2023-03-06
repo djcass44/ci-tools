@@ -7,8 +7,13 @@ import (
 )
 
 type GitLabContext struct {
+	ProjectURL  string `env:"CI_PROJECT_URL"`
 	ProjectDir  string `env:"CI_PROJECT_DIR"`
 	ProjectPath string `env:"PROJECT_PATH"`
+
+	JobImage     string `env:"CI_JOB_IMAGE"`
+	JobID        string `env:"CI_JOB_ID"`
+	JobStartedAt string `env:"CI_JOB_STARTED_AT"`
 
 	Registry         string `env:"CI_REGISTRY"`
 	RegistryImage    string `env:"CI_REGISTRY_IMAGE"`
@@ -19,6 +24,7 @@ type GitLabContext struct {
 	CommitTag      string `env:"CI_COMMIT_TAG"`
 	CommitSha      string `env:"CI_COMMIT_SHA"`
 	CommitShortSha string `env:"CI_COMMIT_SHORT_SHA"`
+	CommitRefName  string `env:"CI_COMMIT_REF_NAME"`
 }
 
 func (c *GitLabContext) Normalise() v1.BuildContext {
@@ -34,21 +40,29 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 		"latest",
 	}
 	if c.CommitTag != "" {
-		tags = append(tags, c.CommitTag)
+		tags = append(tags, strings.ReplaceAll(c.CommitTag, "/", "-"))
 	}
 	if c.CommitBranch != "" {
 		tags = append(tags, strings.ReplaceAll(c.CommitBranch, "/", "-"))
 	}
 	return v1.BuildContext{
+		BuildID: c.JobID,
 		Root:    c.ProjectDir,
 		Context: c.ProjectPath,
 		Image: v1.ImageConfig{
 			Name:     imagePath,
+			Base:     c.JobImage,
 			Registry: c.Registry,
 			Username: c.RegistryUser,
 			Password: c.RegistryPassword,
 		},
 		Tags:       tags,
 		Dockerfile: v1.DockerfileConfig{},
+		Repo: v1.BuildRepo{
+			URL:       c.ProjectURL,
+			CommitSha: c.CommitSha,
+			Ref:       c.CommitRefName,
+		},
+		StartTime: c.JobStartedAt,
 	}
 }

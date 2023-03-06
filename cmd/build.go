@@ -6,6 +6,7 @@ import (
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/djcass44/ci-tools/internal/generators/runtime"
 	"github.com/djcass44/ci-tools/internal/generators/sbom"
+	"github.com/djcass44/ci-tools/internal/generators/slsa"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -22,6 +23,7 @@ const (
 	flagRecipeTemplate = "recipe-template"
 	flagSkipDockerCFG  = "skip-docker-cfg"
 	flagSkipSBOM       = "skip-sbom"
+	flagSkipSLSA       = "skip-slsa"
 )
 
 func init() {
@@ -29,6 +31,7 @@ func init() {
 	buildCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
 	buildCmd.Flags().Bool(flagSkipDockerCFG, false, "skip generating the registry credentials file even if requested by a recipe")
 	buildCmd.Flags().Bool(flagSkipSBOM, false, "skip generating the SBOM")
+	buildCmd.Flags().Bool(flagSkipSLSA, false, "skip generating SLSA provenance")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagRecipe)
@@ -38,6 +41,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	// read flags
 	skipDockerCfg, _ := cmd.Flags().GetBool(flagSkipDockerCFG)
 	skipSBOM, _ := cmd.Flags().GetBool(flagSkipSBOM)
+	skipSLSA, _ := cmd.Flags().GetBool(flagSkipSLSA)
 	arch, _ := cmd.Flags().GetString(flagRecipe)
 	tpl, _ := cmd.Flags().GetString(flagRecipeTemplate)
 	if tpl != "" {
@@ -51,6 +55,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	if err != nil {
 		return err
 	}
+	context.Builder = arch
 
 	cfg, err := v1.ReadConfiguration(tpl, &context)
 	if err != nil {
@@ -79,6 +84,12 @@ func build(cmd *cobra.Command, _ []string) error {
 	// generate the SBOM
 	if !skipSBOM {
 		if err := sbom.Execute(&context); err != nil {
+			return err
+		}
+	}
+
+	if !skipSLSA {
+		if err := slsa.Execute(&context); err != nil {
 			return err
 		}
 	}
