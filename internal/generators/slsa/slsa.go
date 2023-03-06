@@ -2,8 +2,8 @@ package slsa
 
 import (
 	"encoding/json"
-	"fmt"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/djcass44/ci-tools/pkg/purl"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/in-toto/in-toto-golang/in_toto"
@@ -26,7 +26,7 @@ func getDigest(target string) string {
 }
 
 func Execute(ctx *civ1.BuildContext) error {
-	repoURL := fmt.Sprintf("%s@%s", ctx.Repo.URL, ctx.Repo.Ref)
+	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.Ref, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
 	imageDigest := getDigest(ctx.Image.Name)
@@ -39,18 +39,18 @@ func Execute(ctx *civ1.BuildContext) error {
 			Digest: repoDigest,
 		},
 		{
-			URI:    ctx.Image.Base,
+			URI:    purl.Parse(purl.TypeOCI, ctx.Image.Base, baseDigest, digestSha256, ""),
 			Digest: common.DigestSet{digestSha256: baseDigest},
 		},
 		{
-			URI:    ctx.Image.Parent,
+			URI:    purl.Parse(purl.TypeOCI, ctx.Image.Parent, parentDigest, digestSha256, ""),
 			Digest: common.DigestSet{digestSha256: parentDigest},
 		},
 	}
 
 	subjects := []in_toto.Subject{
 		{
-			Name:   ctx.Image.Name,
+			Name:   purl.Parse(purl.TypeOCI, ctx.Image.Name, imageDigest, digestSha256, ""),
 			Digest: common.DigestSet{digestSha256: imageDigest},
 		},
 	}

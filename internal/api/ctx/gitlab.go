@@ -2,6 +2,7 @@ package ctx
 
 import (
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/djcass44/ci-tools/pkg/purl"
 	"path/filepath"
 	"strings"
 )
@@ -64,5 +65,6 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 			Ref:       c.CommitRefName,
 		},
 		StartTime: c.JobStartedAt,
+		Provider:  purl.TypeGitLab,
 	}
 }

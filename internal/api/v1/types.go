@@ -23,6 +23,7 @@ type BuildContext struct {
 	Dockerfile DockerfileConfig
 	Repo       BuildRepo
 	StartTime  string
+	Provider   string
 }
 
 type BuildRepo struct {

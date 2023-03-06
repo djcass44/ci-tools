@@ -1,5 +1,6 @@
 stages:
   - test
+  - verify
   - build
   - integrate
 
@@ -112,3 +113,7 @@ integrate buildkit:
       when: never
     - when: on_success
   <<: *rules
+
+include:
+#  - remote: https://gitlab.com/av1o/gitlab-ci-templates/-/raw/master/verify/Semgrep-Quality.gitlab-ci.yml
+  - remote: https://gitlab.com/av1o/gitlab-ci-templates/-/raw/master/test/Go-Test.gitlab-ci.yml

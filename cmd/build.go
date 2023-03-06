@@ -87,7 +87,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// verify the parent image if one has been specified
-	if context.Image.Parent != "" && !skipCosignVerify {
+	if context.Image.Parent != "" && !skipCosignVerify && cosignPub != "" {
 		if err := sign.Verify(context, context.Image.Parent, cosignPub); err != nil {
 			log.Print("failed to verify Cosign signature on parent image")
 			return err
