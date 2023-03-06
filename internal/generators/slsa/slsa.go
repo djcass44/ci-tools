@@ -9,36 +9,29 @@ import (
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
 	v02 "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.2"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
 
-func getDigest(target string) (string, error) {
+func getDigest(target string) string {
 	sha, err := crane.Digest(target, crane.WithAuthFromKeychain(authn.DefaultKeychain))
 	if err != nil {
-		return "", err
+		log.Printf("unable to generate digest for: %s", target)
+		return ""
 	}
-	return strings.TrimPrefix(sha, "sha256:"), nil
+	return strings.TrimPrefix(sha, "sha256:")
 }
 
 func Execute(ctx *civ1.BuildContext) error {
 	repoURL := fmt.Sprintf("%s@%s", ctx.Repo.URL, ctx.Repo.Ref)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
-	imageDigest, err := getDigest(ctx.Image.Name)
-	if err != nil {
-		return err
-	}
-	baseDigest, err := getDigest(ctx.Image.Base)
-	if err != nil {
-		return err
-	}
-	parentDigest, err := getDigest(ctx.Image.Parent)
-	if err != nil {
-		return err
-	}
+	imageDigest := getDigest(ctx.Image.Name)
+	baseDigest := getDigest(ctx.Image.Base)
+	parentDigest := getDigest(ctx.Image.Parent)
 
 	materials := []common.ProvenanceMaterial{
 		{
