@@ -33,9 +33,19 @@ Command-line arguments:
 * `--skip-docker-cfg` - (*optional*) disables the creation of the OCI registry credentials file, even if requested by a recipe
 * `--skip-sbom` - (*optional*) disables the creation of the Software Bill of Materials (SBOM) file
 * `--skip-slsa` - (*optional*) disables the creation of SLSA provenance
+* `--skip-cosign-verify` - (*optional*) disables signature verification of the parent image
+* `--cosign-verify-key` - (*optional*) path to the Cosign public key to use when verifying the parent image
 
 Environment variables:
 * `BUILD_IMAGE_PARENT` - the container image to use for the application runtime
 * `BUILD_DOCKERFILE` - (*optional*) name of the `Dockerfile` within the build context
 * `BUILD_ARG_*` - (*optional*) arbitrary key-value pairs to be passed to Dockerfile-based recipes
 * `PROJECT_PATH` - (*optional*) path to the project within the build context (use for mono-repos)
+
+### Provenance
+
+All execution of the build phase generate the following provenance:
+* `sbom.cdx.json` - Software Bill of Materials (SBOM) in CycloneDX format
+* `provenance.slsa.json` - SLSA build provenance in InToto format
+
+These files are output to the build root and should be attested using Cosign.
