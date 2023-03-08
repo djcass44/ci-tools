@@ -13,9 +13,6 @@ func (c *BuildContext) Normalise() {
 	if c.Root == "" {
 		c.Root = wd
 	}
-	if c.Context == "" {
-		c.Context = c.Root
-	}
 
 	// handle common stuff
 	var buildArgs []string

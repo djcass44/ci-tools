@@ -32,7 +32,7 @@ build:
       - --bare
       - -t
       - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
-      - {{ .Context }}
+      - .
   com.github.moby.buildkit:
     dockercfg: true
     env:
