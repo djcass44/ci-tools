@@ -67,6 +67,15 @@ func build(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 	context.Builder = arch
+	// rewrite the parent image reference to
+	// use a digest
+	if context.Image.Parent != "" {
+		digest, err := ociutil.SnapshotImage(context.Image.Parent)
+		if err != nil {
+			return err
+		}
+		context.Image.Parent = digest
+	}
 
 	cfg, err := v1.ReadConfiguration(tpl, context)
 	if err != nil {
@@ -87,15 +96,6 @@ func build(cmd *cobra.Command, _ []string) error {
 		}
 	}
 
-	// rewrite the parent image reference to
-	// use a digest
-	if context.Image.Parent != "" {
-		digest, err := ociutil.SnapshotImage(context.Image.Parent)
-		if err != nil {
-			return err
-		}
-		context.Image.Parent = digest
-	}
 	// verify the parent image if one has been specified
 	if context.Image.Parent != "" && !skipCosignVerify && cosignPub != "" {
 		if err := sign.Verify(context, context.Image.Parent, cosignPub); err != nil {
