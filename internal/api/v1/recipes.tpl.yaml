@@ -32,7 +32,7 @@ build:
       - --bare
       - -t
       - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
-      - .
+      - .{{ if .Go.ImportPath }}/{{ .Go.ImportPath }}{{ end }}
   com.github.moby.buildkit:
     dockercfg: true
     env:

@@ -21,6 +21,7 @@ type BuildContext struct {
 	Tags       []string
 	FQTags     []string
 	Dockerfile DockerfileConfig
+	Go         GoConfig
 	Repo       BuildRepo
 	StartTime  string
 	Provider   string
@@ -44,4 +45,8 @@ type ImageConfig struct {
 type DockerfileConfig struct {
 	File string
 	Args []string
+}
+
+type GoConfig struct {
+	ImportPath string
 }
