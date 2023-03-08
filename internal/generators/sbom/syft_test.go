@@ -22,7 +22,7 @@ func TestExecute(t *testing.T) {
 		},
 		Tags:   []string{"latest"},
 		FQTags: []string{"harbor.dcas.dev/docker.io/library/busybox:latest"},
-	})
+	}, "deadbeef")
 	assert.NoError(t, err)
 
 	data, err := os.ReadFile(filepath.Join(tmp, "sbom.cdx.json"))

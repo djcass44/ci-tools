@@ -27,15 +27,19 @@ func TestExecute(t *testing.T) {
 		Builder: "foo.bar",
 		Repo: civ1.BuildRepo{
 			URL:       "https://example.org",
-			CommitSha: "deadbeef",
+			CommitSha: "latest",
 			Ref:       "v1.2.3",
 		},
 		StartTime: "2021-11-05T20:12:38Z",
 		Provider:  packageurl.TypeGithub,
-	})
+	}, "deadbeef")
 	assert.NoError(t, err)
 
 	data, err := os.ReadFile(filepath.Join(tmp, "provenance.slsa.json"))
+	assert.NoError(t, err)
+	t.Log(string(data))
+
+	data, err = os.ReadFile(filepath.Join(tmp, "build.txt"))
 	assert.NoError(t, err)
 	t.Log(string(data))
 }

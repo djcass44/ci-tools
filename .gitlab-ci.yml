@@ -42,6 +42,7 @@ integrate ko:
     paths:
       - sbom.cdx.json
       - provenance.slsa.json
+      - build.txt
   script:
     - |
       mkdir -p bin/
@@ -76,6 +77,7 @@ integrate jib:
     paths:
       - sbom.cdx.json
       - provenance.slsa.json
+      - build.txt
   script:
     - |
       mkdir -p ~/.m2
@@ -106,6 +108,7 @@ integrate buildkit:
     paths:
       - sbom.cdx.json
       - provenance.slsa.json
+      - build.txt
   script:
     - ./ci build --recipe com.github.moby.buildkit
   rules:

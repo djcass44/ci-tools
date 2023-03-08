@@ -8,6 +8,7 @@ import (
 	"github.com/djcass44/ci-tools/internal/generators/sbom"
 	"github.com/djcass44/ci-tools/internal/generators/sign"
 	"github.com/djcass44/ci-tools/internal/generators/slsa"
+	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -86,6 +87,15 @@ func build(cmd *cobra.Command, _ []string) error {
 		}
 	}
 
+	// rewrite the parent image reference to
+	// use a digest
+	if context.Image.Parent != "" {
+		digest, err := ociutil.SnapshotImage(context.Image.Parent)
+		if err != nil {
+			return err
+		}
+		context.Image.Parent = digest
+	}
 	// verify the parent image if one has been specified
 	if context.Image.Parent != "" && !skipCosignVerify && cosignPub != "" {
 		if err := sign.Verify(context, context.Image.Parent, cosignPub); err != nil {
@@ -100,14 +110,15 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// generate the SBOM
+	digest := ociutil.GetDigest(fmt.Sprintf("%s:%s", context.Image.Name, context.Repo.CommitSha))
 	if !skipSBOM {
-		if err := sbom.Execute(context); err != nil {
+		if err := sbom.Execute(context, digest); err != nil {
 			return err
 		}
 	}
 
 	if !skipSLSA {
-		if err := slsa.Execute(context); err != nil {
+		if err := slsa.Execute(context, digest); err != nil {
 			return err
 		}
 	}

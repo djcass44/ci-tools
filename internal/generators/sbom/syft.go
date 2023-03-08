@@ -17,7 +17,7 @@ import (
 	"path/filepath"
 )
 
-func Execute(ctx *civ1.BuildContext) error {
+func Execute(ctx *civ1.BuildContext, digest string) error {
 	// fetch the image
 	ref, err := name.ParseReference(ctx.FQTags[0])
 	if err != nil {
@@ -51,7 +51,15 @@ func Execute(ctx *civ1.BuildContext) error {
 			LinuxDistribution: distro,
 		},
 		Relationships: relationships,
-		Source:        source.Metadata{},
+		Source: source.Metadata{
+			Scheme: source.ImageScheme,
+			ImageMetadata: source.ImageMetadata{
+				UserInput:      ctx.Image.Name,
+				Tags:           ctx.Tags,
+				ManifestDigest: digest,
+			},
+			Name: ctx.Image.Name,
+		},
 		Descriptor: sbom.Descriptor{
 			Name:    ctx.Image.Name,
 			Version: ctx.Tags[0],

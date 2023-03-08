@@ -2,36 +2,25 @@ package slsa
 
 import (
 	"encoding/json"
+	"fmt"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/djcass44/ci-tools/pkg/purl"
-	"github.com/google/go-containerregistry/pkg/authn"
-	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
 	v02 "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.2"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
 
-func getDigest(target string) string {
-	sha, err := crane.Digest(target, crane.WithAuthFromKeychain(authn.DefaultKeychain))
-	if err != nil {
-		log.Printf("unable to generate digest for: %s", target)
-		return ""
-	}
-	return strings.TrimPrefix(sha, "sha256:")
-}
-
-func Execute(ctx *civ1.BuildContext) error {
+func Execute(ctx *civ1.BuildContext, digest string) error {
 	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.Ref, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
-	imageDigest := getDigest(ctx.Image.Name)
-	baseDigest := getDigest(ctx.Image.Base)
-	parentDigest := getDigest(ctx.Image.Parent)
+	baseDigest := ociutil.GetDigest(ctx.Image.Base)
+	parentDigest := ociutil.GetDigest(ctx.Image.Parent)
 
 	materials := []common.ProvenanceMaterial{
 		{
@@ -50,8 +39,8 @@ func Execute(ctx *civ1.BuildContext) error {
 
 	subjects := []in_toto.Subject{
 		{
-			Name:   purl.Parse(purl.TypeOCI, ctx.Image.Name, imageDigest, digestSha256, ""),
-			Digest: common.DigestSet{digestSha256: imageDigest},
+			Name:   purl.Parse(purl.TypeOCI, ctx.Image.Name, digest, digestSha256, ""),
+			Digest: common.DigestSet{digestSha256: digest},
 		},
 	}
 
@@ -69,6 +58,11 @@ func Execute(ctx *civ1.BuildContext) error {
 	}
 	buildEnd := time.Now()
 
+	buildType := "https://github.com/djcass44/ci-tools@v1"
+	if val := os.Getenv("BUILD_SLSA_BUILD_TYPE"); val != "" {
+		buildType = val
+	}
+
 	provenance := in_toto.ProvenanceStatementSLSA02{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          in_toto.StatementInTotoV01,
@@ -76,7 +70,7 @@ func Execute(ctx *civ1.BuildContext) error {
 			Subject:       subjects,
 		},
 		Predicate: v02.ProvenancePredicate{
-			BuildType: "https://github.com/djcass44/ci-tools@v1",
+			BuildType: buildType,
 			Builder: common.ProvenanceBuilder{
 				ID: ctx.Builder,
 			},
@@ -113,7 +107,12 @@ func Execute(ctx *civ1.BuildContext) error {
 		return err
 	}
 
+	// write the provenance file
 	if err := os.WriteFile(filepath.Join(ctx.Root, "provenance.slsa.json"), data, 0644); err != nil {
+		return err
+	}
+	// write the digest file
+	if err := os.WriteFile(filepath.Join(ctx.Root, "build.txt"), []byte(fmt.Sprintf("%s:%s@sha256:%s", ctx.Image.Name, ctx.Repo.CommitSha, digest)), 0644); err != nil {
 		return err
 	}
 
