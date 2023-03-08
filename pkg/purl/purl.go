@@ -18,6 +18,7 @@ const (
 func Parse(purlType, target, digest, digestType, path string) string {
 	name := filepath.Base(target)
 	name, tag, _ := strings.Cut(name, ":")
+	tag, _, _ = strings.Cut(tag, "@sha256:")
 	namespace := filepath.Dir(strings.TrimPrefix(target, "https://"))
 	repoURL, _, _ := strings.Cut(namespace, "/")
 	namespace = strings.TrimPrefix(strings.TrimPrefix(namespace, repoURL), "/")

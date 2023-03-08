@@ -22,6 +22,13 @@ func TestParse(t *testing.T) {
 			"pkg:oci/busybox@sha256:deadbeef?repository_url=docker.io/library/busybox&tag=latest",
 		},
 		{
+			TypeOCI,
+			"docker.io/library/busybox:latest@sha256:deadbeef",
+			"deadbeef",
+			"",
+			"pkg:oci/busybox@sha256:deadbeef?repository_url=docker.io/library/busybox&tag=latest",
+		},
+		{
 			TypeGitLab,
 			"https://gitlab.com/gitlab-org/gitlab.git",
 			"deadbeef",
