@@ -11,18 +11,7 @@ import (
 )
 
 func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe) error {
-	var env []string
-	for k, v := range r.Env {
-		env = append(env, fmt.Sprintf("%s=%s", k, os.ExpandEnv(v)))
-	}
-
-	envArgs := make([]string, len(r.Args))
-	for i := range r.Args {
-		envArgs[i] = os.ExpandEnv(r.Args[i])
-		envArgs[i] = os.Expand(envArgs[i], func(s string) string {
-			return getEnv(env, s)
-		})
-	}
+	env, envArgs := prepareEnv(r.Env, r.Args)
 
 	// run the command
 	log.Printf("running command: [%s %s] with env: [%s]", r.Command, strings.Join(envArgs, " "), strings.Join(env, " "))
@@ -43,6 +32,25 @@ func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe) error {
 		return err
 	}
 	return nil
+}
+
+func prepareEnv(env map[string]string, args []string) ([]string, []string) {
+	// expand our new environment variables
+	var newEnv []string
+	for k, v := range env {
+		newEnv = append(newEnv, fmt.Sprintf("%s=%s", k, os.ExpandEnv(v)))
+	}
+
+	// expand the arguments using a mix of the application environment
+	// and our new recipe-specific environment variables
+	fullEnv := append(newEnv, os.Environ()...)
+	envArgs := make([]string, len(args))
+	for i := range args {
+		envArgs[i] = os.Expand(args[i], func(s string) string {
+			return getEnv(fullEnv, s)
+		})
+	}
+	return newEnv, envArgs
 }
 
 func getEnv(env []string, key string) string {
