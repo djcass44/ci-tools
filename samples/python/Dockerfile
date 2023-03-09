@@ -1,4 +1,5 @@
-FROM harbor.dcas.dev/registry.gitlab.com/av1o/base-images/python:3
+ARG BASE_VERSION
+FROM harbor.dcas.dev/registry.gitlab.com/av1o/base-images/python:$BASE_VERSION
 
 RUN mkdir -p /home/somebody/app
 WORKDIR /home/somebody/app

@@ -100,6 +100,7 @@ integrate buildkit:
     PROJECT_PATH: samples/python
     KUBERNETES_POD_ANNOTATIONS_1: "container.apparmor.security.beta.kubernetes.io/build=unconfined"
     KUBERNETES_POD_ANNOTATIONS_2: "container.seccomp.security.alpha.kubernetes.io/build=unconfined"
+    BUILD_ARG_BASE_VERSION: "3"
   cache:
     paths:
       - .cache
