@@ -118,7 +118,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	if !skipSLSA {
-		if err := slsa.Execute(context, digest); err != nil {
+		if err := slsa.Execute(context, &recipe, digest); err != nil {
 			return err
 		}
 	}

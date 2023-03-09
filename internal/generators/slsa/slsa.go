@@ -9,15 +9,18 @@ import (
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
 	v02 "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.2"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 )
 
-func Execute(ctx *civ1.BuildContext, digest string) error {
-	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.Ref, digestSha1, ctx.Context)
+func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error {
+	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, digest, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
+
+	log.Printf("generating SLSA provenance for ref: %s", repoURL)
 
 	baseDigest := ociutil.GetDigest(ctx.Image.Base)
 	parentDigest := ociutil.GetDigest(ctx.Image.Parent)
@@ -85,6 +88,7 @@ func Execute(ctx *civ1.BuildContext, digest string) error {
 			},
 			BuildConfig: map[string]any{
 				"commands": os.Args,
+				"build":    append([]string{r.Command}, r.Args...),
 				"shell":    os.Getenv("SHELL"),
 			},
 			Metadata: &v02.ProvenanceMetadata{

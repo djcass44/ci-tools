@@ -3,6 +3,8 @@ package v1
 import (
 	"fmt"
 	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -39,6 +41,19 @@ func (c *BuildContext) Normalise() {
 	}
 	c.FQTags = fqTags
 	c.Image.Parent = os.Getenv("BUILD_IMAGE_PARENT")
+	// collect cache configuration
+	// as it may differ between
+	// CI/CD implementations
+	cacheEnabled, err := strconv.ParseBool(os.Getenv("BUILD_CACHE_ENABLED"))
+	if err != nil {
+		cacheEnabled = true
+	}
+	cachePath := filepath.Join(c.Root, ".cache")
+	if val := os.Getenv("BUILD_CACHE_PATH"); val != "" {
+		cachePath = val
+	}
+	c.Cache.Enabled = cacheEnabled
+	c.Cache.Path = cachePath
 }
 
 func (c *BuildContext) DockerCFG() string {

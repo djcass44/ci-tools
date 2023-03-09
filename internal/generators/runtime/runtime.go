@@ -11,14 +11,17 @@ import (
 )
 
 func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe) error {
-	envArgs := make([]string, len(r.Args))
-	for i := range r.Args {
-		envArgs[i] = os.ExpandEnv(r.Args[i])
-	}
-
 	var env []string
 	for k, v := range r.Env {
 		env = append(env, fmt.Sprintf("%s=%s", k, os.ExpandEnv(v)))
+	}
+
+	envArgs := make([]string, len(r.Args))
+	for i := range r.Args {
+		envArgs[i] = os.ExpandEnv(r.Args[i])
+		envArgs[i] = os.Expand(envArgs[i], func(s string) string {
+			return getEnv(env, s)
+		})
 	}
 
 	// run the command
@@ -40,4 +43,17 @@ func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe) error {
 		return err
 	}
 	return nil
+}
+
+func getEnv(env []string, key string) string {
+	for _, e := range env {
+		k, v, ok := strings.Cut(e, "=")
+		if !ok {
+			continue
+		}
+		if k == key {
+			return v
+		}
+	}
+	return ""
 }

@@ -46,6 +46,6 @@ func Verify(ctx *civ1.BuildContext, target, key string) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("verified %d signatures", len(signatures))
+	log.Printf("verified %d signature(s)", len(signatures))
 	return nil
 }

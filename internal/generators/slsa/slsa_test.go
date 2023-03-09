@@ -32,7 +32,7 @@ func TestExecute(t *testing.T) {
 		},
 		StartTime: "2021-11-05T20:12:38Z",
 		Provider:  packageurl.TypeGithub,
-	}, "deadbeef")
+	}, &civ1.BuildRecipe{}, "deadbeef")
 	assert.NoError(t, err)
 
 	data, err := os.ReadFile(filepath.Join(tmp, "provenance.slsa.json"))

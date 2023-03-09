@@ -22,6 +22,7 @@ type BuildContext struct {
 	FQTags     []string
 	Dockerfile DockerfileConfig
 	Repo       BuildRepo
+	Cache      BuildCache
 	StartTime  string
 	Provider   string
 }
@@ -30,6 +31,11 @@ type BuildRepo struct {
 	URL       string
 	CommitSha string
 	Ref       string
+}
+
+type BuildCache struct {
+	Enabled bool
+	Path    string
 }
 
 type ImageConfig struct {
