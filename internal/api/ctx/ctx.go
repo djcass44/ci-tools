@@ -13,7 +13,7 @@ type Normalisable interface {
 func GetContext() (*v1.BuildContext, error) {
 	var context Normalisable
 	// check if we're in GitLab CI
-	if os.Getenv("GITLAB_CI") != "" {
+	if os.Getenv(EnvGitLabCI) != "" {
 		context = new(GitLabContext)
 		if _, err := env.UnmarshalFromEnviron(context); err != nil {
 			return nil, err

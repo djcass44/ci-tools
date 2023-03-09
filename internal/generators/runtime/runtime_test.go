@@ -13,7 +13,8 @@ func TestPrepareEnv(t *testing.T) {
 	}, []string{
 		"--foo=$FOO",
 		"--zoo=$ZOO",
+		"build-arg=FOO=bar",
 	})
 	assert.EqualValues(t, []string{"FOO=bar"}, env)
-	assert.EqualValues(t, []string{"--foo=bar", "--zoo=foo"}, args)
+	assert.EqualValues(t, []string{"--foo=bar", "--zoo=foo", "build-arg=FOO=bar"}, args)
 }

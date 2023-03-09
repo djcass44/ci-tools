@@ -31,7 +31,7 @@ func Execute(ctx *civ1.BuildContext, digest string) error {
 	if err != nil {
 		return err
 	}
-	syftImage := image.New(img, filepath.Join(ctx.Root, ".cache"), image.WithTags(ctx.Tags...))
+	syftImage := image.New(img, ctx.Cache.Path, image.WithTags(ctx.Tags...))
 	if err := syftImage.Read(); err != nil {
 		return err
 	}
@@ -72,7 +72,7 @@ func Execute(ctx *civ1.BuildContext, digest string) error {
 		return err
 	}
 	// write to file
-	if err := os.WriteFile(filepath.Join(ctx.Root, "sbom.cdx.json"), data, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(ctx.Root, outSBOM), data, 0644); err != nil {
 		return err
 	}
 	return nil

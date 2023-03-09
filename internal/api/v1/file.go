@@ -41,7 +41,7 @@ func ReadConfiguration(path string, ctx *BuildContext) (*Recipes, error) {
 }
 
 func WriteDockerCFG(ctx *BuildContext) error {
-	path := os.Getenv("DOCKER_CONFIG")
+	path := os.Getenv(EnvDockerConfig)
 	home, _ := os.UserHomeDir()
 	if path == "" {
 		path = filepath.Join(home, ".docker", "config.json")

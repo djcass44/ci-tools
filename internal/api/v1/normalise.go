@@ -23,16 +23,16 @@ func (c *BuildContext) Normalise() {
 		if !ok {
 			continue
 		}
-		if strings.HasPrefix(k, "BUILD_ARG_") {
-			buildArgs = append(buildArgs, fmt.Sprintf("%s=%s", strings.TrimPrefix(k, "BUILD_ARG_"), v))
+		if strings.HasPrefix(k, EnvBuildArgPrefix) {
+			buildArgs = append(buildArgs, fmt.Sprintf("%s=%s", strings.TrimPrefix(k, EnvBuildArgPrefix), v))
 		}
 	}
 	c.Dockerfile.Args = buildArgs
-	c.Dockerfile.File = "Dockerfile"
-	if val := os.Getenv("BUILD_DOCKERFILE"); val != "" {
+	c.Dockerfile.File = DefaultDockerfile
+	if val := os.Getenv(EnvBuildDockerfile); val != "" {
 		c.Dockerfile.File = val
 	}
-	c.Go.ImportPath = os.Getenv("BUILD_GO_IMPORTPATH")
+	c.Go.ImportPath = os.Getenv(EnvBuildGoImportPath)
 
 	// collect fully-qualified tags
 	// e.g. foo.bar/foo/bar:v1.2.3
@@ -41,16 +41,16 @@ func (c *BuildContext) Normalise() {
 		fqTags[i] = fmt.Sprintf("%s:%s", c.Image.Name, c.Tags[i])
 	}
 	c.FQTags = fqTags
-	c.Image.Parent = os.Getenv("BUILD_IMAGE_PARENT")
+	c.Image.Parent = os.Getenv(EnvBuildImageParent)
 	// collect cache configuration
 	// as it may differ between
 	// CI/CD implementations
-	cacheEnabled, err := strconv.ParseBool(os.Getenv("BUILD_CACHE_ENABLED"))
+	cacheEnabled, err := strconv.ParseBool(os.Getenv(EnvBuildCacheEnabled))
 	if err != nil {
 		cacheEnabled = true
 	}
-	cachePath := filepath.Join(c.Root, ".cache")
-	if val := os.Getenv("BUILD_CACHE_PATH"); val != "" {
+	cachePath := filepath.Join(c.Root, DefaultCacheName)
+	if val := os.Getenv(EnvBuildCachePath); val != "" {
 		cachePath = val
 	}
 	c.Cache.Enabled = cacheEnabled

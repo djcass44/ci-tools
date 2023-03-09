@@ -22,6 +22,10 @@ func TestExecute(t *testing.T) {
 		},
 		Tags:   []string{"latest"},
 		FQTags: []string{"harbor.dcas.dev/docker.io/library/busybox:latest"},
+		Cache: civ1.BuildCache{
+			Enabled: true,
+			Path:    filepath.Join(tmp, ".cache"),
+		},
 	}, "deadbeef")
 	assert.NoError(t, err)
 

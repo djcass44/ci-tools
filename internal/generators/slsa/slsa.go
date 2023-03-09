@@ -61,8 +61,8 @@ func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error {
 	}
 	buildEnd := time.Now()
 
-	buildType := "https://github.com/djcass44/ci-tools@v1"
-	if val := os.Getenv("BUILD_SLSA_BUILD_TYPE"); val != "" {
+	buildType := defaultBuildType
+	if val := os.Getenv(civ1.EnvBuildSLSABuildType); val != "" {
 		buildType = val
 	}
 
@@ -112,11 +112,11 @@ func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error {
 	}
 
 	// write the provenance file
-	if err := os.WriteFile(filepath.Join(ctx.Root, "provenance.slsa.json"), data, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(ctx.Root, outProvenance), data, 0644); err != nil {
 		return err
 	}
 	// write the digest file
-	if err := os.WriteFile(filepath.Join(ctx.Root, "build.txt"), []byte(fmt.Sprintf("%s:%s@sha256:%s", ctx.Image.Name, ctx.Repo.CommitSha, digest)), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(ctx.Root, outBuild), []byte(fmt.Sprintf("%s:%s@sha256:%s", ctx.Image.Name, ctx.Repo.CommitSha, digest)), 0644); err != nil {
 		return err
 	}
 

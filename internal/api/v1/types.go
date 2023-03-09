@@ -1,5 +1,23 @@
 package v1
 
+const (
+	EnvBuildArgPrefix     = "BUILD_ARG_"
+	EnvBuildDockerfile    = "BUILD_DOCKERFILE"
+	EnvBuildGoImportPath  = "BUILD_GO_IMPORTPATH"
+	EnvBuildImageParent   = "BUILD_IMAGE_PARENT"
+	EnvBuildSLSABuildType = "BUILD_SLSA_BUILD_TYPE"
+
+	EnvBuildCacheEnabled = "BUILD_CACHE_ENABLED"
+	EnvBuildCachePath    = "BUILD_CACHE_PATH"
+
+	EnvDockerConfig = "DOCKER_CONFIG"
+)
+
+const (
+	DefaultDockerfile = "Dockerfile"
+	DefaultCacheName  = ".cache"
+)
+
 type BuildRecipe struct {
 	DockerCFG bool              `yaml:"dockercfg,omitempty"`
 	CD        bool              `yaml:"cd,omitempty"`
