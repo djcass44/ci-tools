@@ -17,7 +17,7 @@ import (
 )
 
 func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error {
-	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, digest, digestSha1, ctx.Context)
+	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.CommitSha, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
 	log.Printf("generating SLSA provenance for ref: %s", repoURL)
