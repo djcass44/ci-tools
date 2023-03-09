@@ -40,6 +40,9 @@ Environment variables:
 * `BUILD_IMAGE_PARENT` - the container image to use for the application runtime
 * `BUILD_DOCKERFILE` - (*optional*) name of the `Dockerfile` within the build context
 * `BUILD_ARG_*` - (*optional*) arbitrary key-value pairs to be passed to Dockerfile-based recipes
+* `BUILD_CACHE_ENABLED` - (*optional*) enable or disable caching (default: `true`). Cache logic depends on the recipe
+* `BUILD_CACHE_PATH` - (*optional*) the path that cache files will be stored (default `<project-root>/.cache`)
+* `BUILD_GO_IMPORTPATH` - (*optional*) the import path used by Go projects. Useful when the `main.go` file is in a subdirectory
 * `PROJECT_PATH` - (*optional*) path to the project within the build context (use for mono-repos)
 
 ### Provenance

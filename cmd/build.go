@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/djcass44/ci-tools/internal/api/ctx"
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/djcass44/ci-tools/internal/generators/cache"
 	"github.com/djcass44/ci-tools/internal/generators/runtime"
 	"github.com/djcass44/ci-tools/internal/generators/sbom"
 	"github.com/djcass44/ci-tools/internal/generators/sign"
@@ -95,6 +96,9 @@ func build(cmd *cobra.Command, _ []string) error {
 			return err
 		}
 	}
+
+	// prepare cache directories
+	cache.Execute(context)
 
 	// verify the parent image if one has been specified
 	if context.Image.Parent != "" && !skipCosignVerify && cosignPub != "" {
