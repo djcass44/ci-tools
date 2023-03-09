@@ -32,6 +32,7 @@ func (c *BuildContext) Normalise() {
 	if val := os.Getenv("BUILD_DOCKERFILE"); val != "" {
 		c.Dockerfile.File = val
 	}
+	c.Go.ImportPath = os.Getenv("BUILD_GO_IMPORTPATH")
 
 	// collect fully-qualified tags
 	// e.g. foo.bar/foo/bar:v1.2.3
