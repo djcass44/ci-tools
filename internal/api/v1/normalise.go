@@ -36,7 +36,17 @@ func (c *BuildContext) Normalise() {
 
 	// handle extra tags
 	extraTags := strings.Split(os.Getenv(EnvBuildTags), ",")
-	c.Tags = append(c.Tags, extraTags...)
+	for _, t := range extraTags {
+		// make sure to remove useless whitespace
+		tt := strings.TrimSpace(t)
+		// ignore tags that are entirely
+		// empty since this causes issues
+		// with some builders (e.g. buildkit)
+		if tt == "" {
+			continue
+		}
+		c.Tags = append(c.Tags, tt)
+	}
 
 	// collect fully-qualified tags
 	// e.g. foo.bar/foo/bar:v1.2.3
