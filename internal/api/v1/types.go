@@ -2,6 +2,7 @@ package v1
 
 const (
 	EnvBuildArgPrefix     = "BUILD_ARG_"
+	EnvBuildTags          = "BUILD_TAGS"
 	EnvBuildDockerfile    = "BUILD_DOCKERFILE"
 	EnvBuildGoImportPath  = "BUILD_GO_IMPORTPATH"
 	EnvBuildImageParent   = "BUILD_IMAGE_PARENT"

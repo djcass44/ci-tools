@@ -34,6 +34,10 @@ func (c *BuildContext) Normalise() {
 	}
 	c.Go.ImportPath = os.Getenv(EnvBuildGoImportPath)
 
+	// handle extra tags
+	extraTags := strings.Split(os.Getenv(EnvBuildTags), ",")
+	c.Tags = append(c.Tags, extraTags...)
+
 	// collect fully-qualified tags
 	// e.g. foo.bar/foo/bar:v1.2.3
 	fqTags := make([]string, len(c.Tags))
