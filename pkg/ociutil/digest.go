@@ -23,17 +23,24 @@ func GetDigest(target string) string {
 	return strings.TrimPrefix(sha, "sha256:")
 }
 
+// SnapshotImage mangles a given OCI string so that
+// there is a digest present.
 func SnapshotImage(target string) (string, error) {
 	ref, err := name.ParseReference(target)
 	if err != nil {
 		return "", err
 	}
+	// if the name already contains a digest, we can
+	// just return straight away
 	if d, err := name.NewDigest(ref.String()); err == nil {
 		return d.String(), nil
 	}
+	// if there's no tag and no digest, throw an error
 	if _, err := name.NewTag(ref.String()); err != nil {
 		return "", err
 	}
+	// otherwise grab the digest for the tag and
+	// splice it in
 	digest := GetDigest(ref.String())
 	return fmt.Sprintf("%s@sha256:%s", ref.String(), digest), nil
 }

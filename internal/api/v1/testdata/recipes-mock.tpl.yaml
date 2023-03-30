@@ -1,0 +1,5 @@
+build:
+  echo:
+    command: echo
+    args:
+      - {{ .Image.Name }}

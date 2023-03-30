@@ -8,23 +8,41 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 //go:embed recipes.tpl.yaml
 var defaultRecipes string
 
+func ReadConfigurations(ctx *BuildContext, paths ...string) (*Recipes, error) {
+	recipes := &Recipes{map[string]BuildRecipe{}}
+	for _, p := range paths {
+		rc, err := ReadConfiguration(p, ctx)
+		if err != nil {
+			continue
+		}
+		for k, v := range rc.Build {
+			recipes.Build[k] = v
+		}
+		log.Printf("loaded %d recipes from file: '%s'", len(rc.Build), p)
+	}
+	log.Printf("loaded %d recipes", len(recipes.Build))
+	return recipes, nil
+}
+
 func ReadConfiguration(path string, ctx *BuildContext) (*Recipes, error) {
+	path = strings.TrimSpace(path)
 	var tpl *template.Template
 	var err error
 	if path == "" {
 		log.Print("loading default configuration file")
 		tpl, err = template.New("recipes.tpl.yaml").Parse(defaultRecipes)
 	} else {
-		log.Printf("reading configuration file: %s", path)
+		log.Printf("reading configuration file: '%s'", path)
 		tpl, err = template.New(filepath.Base(filepath.Clean(path))).ParseFiles(path)
 	}
 	if err != nil {
-		log.Printf("failed to read configuration file: %s", err)
+		log.Printf("failed to read configuration file: '%s'", err)
 		return nil, err
 	}
 	data := new(bytes.Buffer)

@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
+	"strings"
 )
 
 var buildCmd = &cobra.Command{
@@ -22,12 +23,13 @@ var buildCmd = &cobra.Command{
 }
 
 const (
-	flagRecipe           = "recipe"
-	flagRecipeTemplate   = "recipe-template"
-	flagSkipDockerCFG    = "skip-docker-cfg"
-	flagSkipSBOM         = "skip-sbom"
-	flagSkipSLSA         = "skip-slsa"
-	flagSkipCosignVerify = "skip-cosign-verify"
+	flagRecipe              = "recipe"
+	flagRecipeTemplate      = "recipe-template"
+	flagRecipeTemplateExtra = "extra-recipe-template"
+	flagSkipDockerCFG       = "skip-docker-cfg"
+	flagSkipSBOM            = "skip-sbom"
+	flagSkipSLSA            = "skip-slsa"
+	flagSkipCosignVerify    = "skip-cosign-verify"
 
 	flagCosignPublicKey = "cosign-verify-key"
 )
@@ -35,6 +37,7 @@ const (
 func init() {
 	buildCmd.Flags().StringP(flagRecipe, "a", "", "application recipe to use")
 	buildCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
+	buildCmd.Flags().String(flagRecipeTemplateExtra, "", "additional recipe templates to merge with the default recipe template file")
 	buildCmd.Flags().Bool(flagSkipDockerCFG, false, "skip generating the registry credentials file even if requested by a recipe")
 	buildCmd.Flags().Bool(flagSkipSBOM, false, "skip generating the SBOM")
 	buildCmd.Flags().Bool(flagSkipSLSA, false, "skip generating SLSA provenance")
@@ -45,6 +48,7 @@ func init() {
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagRecipe)
 	buildCmd.MarkFlagsMutuallyExclusive(flagCosignPublicKey, flagSkipCosignVerify)
+	buildCmd.MarkFlagsMutuallyExclusive(flagRecipeTemplate, flagRecipeTemplateExtra)
 }
 
 func build(cmd *cobra.Command, _ []string) error {
@@ -58,6 +62,9 @@ func build(cmd *cobra.Command, _ []string) error {
 	if tpl != "" {
 		log.Printf("using custom recipe template: %s", tpl)
 	}
+	extras, _ := cmd.Flags().GetString(flagRecipeTemplateExtra)
+	extraTemplates := append([]string{tpl}, strings.Split(extras, ",")...)
+
 	cosignPub, _ := cmd.Flags().GetString(flagCosignPublicKey)
 
 	// figure out what we need to do
@@ -78,7 +85,7 @@ func build(cmd *cobra.Command, _ []string) error {
 		context.Image.Parent = digest
 	}
 
-	cfg, err := v1.ReadConfiguration(tpl, context)
+	cfg, err := v1.ReadConfigurations(context, extraTemplates...)
 	if err != nil {
 		return err
 	}

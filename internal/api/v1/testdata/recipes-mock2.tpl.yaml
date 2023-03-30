@@ -1,0 +1,10 @@
+build:
+  echo:
+    command: echo
+    args:
+      - {{ .Image.Name }}
+      - test
+  cat:
+    command: cat
+    args:
+      - test.txt
