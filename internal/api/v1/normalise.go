@@ -32,6 +32,12 @@ func (c *BuildContext) Normalise() {
 	if val := os.Getenv(EnvBuildDockerfile); val != "" {
 		c.Dockerfile.File = val
 	}
+	// ensure that a default context is set
+	// so that we're not looking for the dockerfile
+	// in a weird location
+	if c.Context == "" {
+		c.Context = "."
+	}
 	c.Go.ImportPath = os.Getenv(EnvBuildGoImportPath)
 
 	// handle extra tags
