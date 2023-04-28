@@ -15,7 +15,10 @@ import (
 var defaultRecipes string
 
 func ReadConfigurations(ctx *BuildContext, paths ...string) (*Recipes, error) {
-	recipes := &Recipes{map[string]BuildRecipe{}}
+	recipes := &Recipes{
+		Build:       map[string]BuildRecipe{},
+		Dockerfiles: map[string]Dockerfile{},
+	}
 	for _, p := range paths {
 		rc, err := ReadConfiguration(p, ctx)
 		if err != nil {
@@ -24,7 +27,11 @@ func ReadConfigurations(ctx *BuildContext, paths ...string) (*Recipes, error) {
 		for k, v := range rc.Build {
 			recipes.Build[k] = v
 		}
+		for k, v := range rc.Dockerfiles {
+			recipes.Dockerfiles[k] = v
+		}
 		log.Printf("loaded %d recipes from file: '%s'", len(rc.Build), p)
+		log.Printf("loaded %d dockerfiles from file: '%s'", len(rc.Dockerfiles), p)
 	}
 	log.Printf("loaded %d recipes", len(recipes.Build))
 	return recipes, nil

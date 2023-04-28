@@ -12,6 +12,7 @@ var command = &cobra.Command{
 
 func init() {
 	command.AddCommand(buildCmd)
+	command.AddCommand(dockerfileCmd)
 }
 
 func Execute() {

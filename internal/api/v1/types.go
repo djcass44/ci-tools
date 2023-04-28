@@ -28,7 +28,8 @@ type BuildRecipe struct {
 }
 
 type Recipes struct {
-	Build map[string]BuildRecipe `json:"build"`
+	Build       map[string]BuildRecipe `yaml:"build"`
+	Dockerfiles map[string]Dockerfile  `yaml:"dockerfiles"`
 }
 
 type BuildContext struct {
@@ -74,4 +75,13 @@ type DockerfileConfig struct {
 
 type GoConfig struct {
 	ImportPath string
+}
+
+type Dockerfile struct {
+	Content DockerfileContent `yaml:"content"`
+}
+
+type DockerfileContent struct {
+	Inline string `yaml:"inline,omitempty"`
+	File   string `yaml:"file,omitempty"`
 }

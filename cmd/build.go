@@ -26,10 +26,11 @@ const (
 	flagRecipe              = "recipe"
 	flagRecipeTemplate      = "recipe-template"
 	flagRecipeTemplateExtra = "extra-recipe-template"
-	flagSkipDockerCFG       = "skip-docker-cfg"
-	flagSkipSBOM            = "skip-sbom"
-	flagSkipSLSA            = "skip-slsa"
-	flagSkipCosignVerify    = "skip-cosign-verify"
+
+	flagSkipDockerCFG    = "skip-docker-cfg"
+	flagSkipSBOM         = "skip-sbom"
+	flagSkipSLSA         = "skip-slsa"
+	flagSkipCosignVerify = "skip-cosign-verify"
 
 	flagCosignPublicKey = "cosign-verify-key"
 )
@@ -38,6 +39,7 @@ func init() {
 	buildCmd.Flags().StringP(flagRecipe, "a", "", "application recipe to use")
 	buildCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
 	buildCmd.Flags().String(flagRecipeTemplateExtra, "", "additional recipe templates to merge with the default recipe template file")
+
 	buildCmd.Flags().Bool(flagSkipDockerCFG, false, "skip generating the registry credentials file even if requested by a recipe")
 	buildCmd.Flags().Bool(flagSkipSBOM, false, "skip generating the SBOM")
 	buildCmd.Flags().Bool(flagSkipSLSA, false, "skip generating SLSA provenance")

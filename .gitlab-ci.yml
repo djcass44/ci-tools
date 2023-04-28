@@ -111,6 +111,7 @@ integrate buildkit:
       - provenance.slsa.json
       - build.txt
   script:
+    - ./ci dockerfile --name python/micropipenv@v1
     - ./ci build --recipe com.github.moby.buildkit
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
