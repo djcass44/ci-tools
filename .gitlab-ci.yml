@@ -17,8 +17,14 @@ build binary:
   image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.20-rolling
   variables:
     GOFLAGS: "-buildvcs=false"
+    GOPATH: $CI_PROJECT_DIR/.go
   script:
+    - mkdir -p .go
     - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o ci -a -installsuffix cgo -ldflags '-extldflags "-static"' main.go
+  cache:
+    key: golang
+    paths:
+      - .go/pkg/mod
   artifacts:
     paths:
       - ci
