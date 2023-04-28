@@ -17,8 +17,10 @@ var dockerfileCmd = &cobra.Command{
 	RunE:  retrieve,
 }
 
-const flagName = "name"
-const flagOutPath = "out"
+const (
+	flagName    = "name"
+	flagOutPath = "out"
+)
 
 func init() {
 	dockerfileCmd.Flags().StringP(flagName, "n", "", "Dockerfile to retrieve")
@@ -59,9 +61,14 @@ func retrieve(cmd *cobra.Command, _ []string) error {
 	if !ok {
 		return fmt.Errorf("failed to locate Dockerfile: %s", name)
 	}
+	// if the user hasn't specified an output location,
+	// then we figure it out based on the environmental
+	// context
 	if out == "" {
 		out = filepath.Join(context.Root, context.Context, "Dockerfile")
 	}
+	// retrieve the Dockerfile and write
+	// it to disk
 	if err := dockerfile.Get(&df.Content, out); err != nil {
 		return err
 	}
