@@ -7,6 +7,7 @@ import (
 	"github.com/djcass44/ci-tools/internal/generators/dockerfile"
 	"github.com/spf13/cobra"
 	"log"
+	"path/filepath"
 	"strings"
 )
 
@@ -17,9 +18,11 @@ var dockerfileCmd = &cobra.Command{
 }
 
 const flagName = "name"
+const flagOutPath = "out"
 
 func init() {
 	dockerfileCmd.Flags().StringP(flagName, "n", "", "Dockerfile to retrieve")
+	dockerfileCmd.Flags().StringP(flagOutPath, "o", "", "Directory to save the Dockerfile. Defaults to 'project-dir/monorepo-dir/Dockerfile'")
 
 	dockerfileCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
 	dockerfileCmd.Flags().String(flagRecipeTemplateExtra, "", "additional recipe templates to merge with the default recipe template file")
@@ -32,6 +35,7 @@ func init() {
 func retrieve(cmd *cobra.Command, _ []string) error {
 	// read flags
 	name, _ := cmd.Flags().GetString(flagName)
+	out, _ := cmd.Flags().GetString(flagOutPath)
 
 	tpl, _ := cmd.Flags().GetString(flagRecipeTemplate)
 	if tpl != "" {
@@ -55,10 +59,13 @@ func retrieve(cmd *cobra.Command, _ []string) error {
 	if !ok {
 		return fmt.Errorf("failed to locate Dockerfile: %s", name)
 	}
-	if err := dockerfile.Get(&df.Content, "Dockerfile"); err != nil {
+	if out == "" {
+		out = filepath.Join(context.Root, context.Context, "Dockerfile")
+	}
+	if err := dockerfile.Get(&df.Content, out); err != nil {
 		return err
 	}
-	log.Printf("successfully retrieved Dockerfile")
+	log.Printf("successfully wrote Dockerfile to: %s", out)
 
 	return nil
 }
