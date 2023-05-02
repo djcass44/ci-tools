@@ -52,6 +52,7 @@ type BuildRepo struct {
 	URL       string
 	CommitSha string
 	Ref       string
+	Trunk     bool
 }
 
 type BuildCache struct {

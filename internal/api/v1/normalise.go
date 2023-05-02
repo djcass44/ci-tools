@@ -2,6 +2,7 @@ package v1
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -42,16 +43,20 @@ func (c *BuildContext) Normalise() {
 
 	// handle extra tags
 	extraTags := strings.Split(os.Getenv(EnvBuildTags), ",")
-	for _, t := range extraTags {
-		// make sure to remove useless whitespace
-		tt := strings.TrimSpace(t)
-		// ignore tags that are entirely
-		// empty since this causes issues
-		// with some builders (e.g. buildkit)
-		if tt == "" {
-			continue
+	if c.Repo.Trunk {
+		for _, t := range extraTags {
+			// make sure to remove useless whitespace
+			tt := strings.TrimSpace(t)
+			// ignore tags that are entirely
+			// empty since this causes issues
+			// with some builders (e.g. buildkit)
+			if tt == "" {
+				continue
+			}
+			c.Tags = append(c.Tags, tt)
 		}
-		c.Tags = append(c.Tags, tt)
+	} else {
+		log.Printf("skipping extra tags are we are not on the trunk or a tag")
 	}
 
 	// collect fully-qualified tags

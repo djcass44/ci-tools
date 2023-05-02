@@ -42,6 +42,7 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 			URL:       c.ProjectURL,
 			CommitSha: c.CommitSha,
 			Ref:       c.CommitRefName,
+			Trunk:     c.CommitBranch == c.DefaultBranch || c.CommitTag != "",
 		},
 		StartTime: c.JobStartedAt,
 		Provider:  purl.TypeGitLab,

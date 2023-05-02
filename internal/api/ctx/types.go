@@ -3,9 +3,10 @@ package ctx
 const EnvGitLabCI = "GITLAB_CI"
 
 type GitLabContext struct {
-	ProjectURL  string `env:"CI_PROJECT_URL"`
-	ProjectDir  string `env:"CI_PROJECT_DIR"`
-	ProjectPath string `env:"PROJECT_PATH"`
+	ProjectURL    string `env:"CI_PROJECT_URL"`
+	ProjectDir    string `env:"CI_PROJECT_DIR"`
+	ProjectPath   string `env:"PROJECT_PATH"`
+	DefaultBranch string `env:"CI_DEFAULT_BRANCH"`
 
 	JobImage     string `env:"CI_JOB_IMAGE"`
 	JobID        string `env:"CI_JOB_ID"`
