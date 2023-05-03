@@ -64,6 +64,40 @@ integrate ko:
     - when: on_success
   <<: *rules
 
+integrate nib:
+  stage: integrate
+  image: harbor.dcas.dev/ghcr.io/djcass44/nib/srv:v1.0.2
+  dependencies:
+    - build binary
+  needs:
+    - build binary
+  variables:
+    PROJECT_PATH: samples/static
+    BUILD_IMAGE_PARENT: harbor.dcas.dev/gcr.io/distroless/static-debian11:nonroot
+  cache:
+    paths:
+      - .cache
+    key: nib
+  artifacts:
+    paths:
+      - sbom.cdx.json
+      - provenance.slsa.json
+      - build.txt
+  script:
+    - |
+      mkdir -p bin/
+      mv ci bin/
+      export PATH="$PATH:$CI_PROJECT_DIR/bin"
+      
+      wget -qO- "https://github.com/djcass44/nib/releases/download/v1.0.2/nib_1.0.2_linux_amd64.tar.gz" | tar -xvz nib
+      install ./ko "$CI_PROJECT_DIR/bin/nib"
+    - ci build --recipe com.github.djcass44.nib --cosign-verify-key="$CI_PROJECT_DIR/internal/generators/sign/testdata/distroless.pub"
+  rules:
+    - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+      when: never
+    - when: on_success
+  <<: *rules
+
 integrate jib:
   stage: integrate
   image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/maven:19

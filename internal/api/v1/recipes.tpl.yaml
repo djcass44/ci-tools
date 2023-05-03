@@ -20,6 +20,18 @@ build:
       - -Djib.applicationCache={{ .Cache.Path }}
       {{- end }}
       - -Dproject.build.outputTimestamp=2023-01-01T00:00:00Z
+  com.github.djcass44.nib:
+    dockercfg: true
+    env:
+      NIB_DEFAULT_BASE_IMAGE: {{ .Image.Parent }}
+      NIB_DOCKER_REPO: {{ .Image.Name }}
+      NIB_CACHE: {{ .Cache.Path }}
+    command: nib
+    args:
+      - build
+      - -t
+      - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
+      - {{ .Context }}
   com.github.google.ko:
     cd: true
     dockercfg: true
