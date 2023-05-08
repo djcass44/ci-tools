@@ -83,8 +83,9 @@ dockerfiles:
   python/micropipenv@v1:
     content:
       inline: |
-        ARG BASE_VERSION
-        FROM harbor.dcas.dev/registry.gitlab.com/av1o/base-images/python:$BASE_VERSION
+        ARG BASE_VERSION=3
+        ARG BASE_REPO=registry.gitlab.com/av1o/base-images/python
+        FROM $BASE_REPO:$BASE_VERSION
 
         RUN mkdir -p /home/somebody/app
         WORKDIR /home/somebody/app
@@ -96,4 +97,5 @@ dockerfiles:
         COPY . .
 
         ENTRYPOINT ["python"]
-        CMD ["app.py"]
+        ARG APP="app.py"
+        CMD [$APP]
