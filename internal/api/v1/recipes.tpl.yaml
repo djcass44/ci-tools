@@ -97,5 +97,6 @@ dockerfiles:
         COPY . .
 
         ENTRYPOINT ["python"]
-        ARG APP="app.py"
-        CMD [$APP]
+        ARG APP
+        ENV APP ${APP:app.py}
+        CMD ["${APP}"]
