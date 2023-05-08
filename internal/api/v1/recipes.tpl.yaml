@@ -96,7 +96,7 @@ dockerfiles:
 
         COPY . .
 
-        ENTRYPOINT ["python"]
-        ARG APP
-        ENV APP ${APP:app.py}
-        CMD ["${APP}"]
+        ARG APP="app.py"
+        ENV APP ${APP}
+        ENV PYTHONUNBUFFERED="true"
+        ENTRYPOINT ["sh", "-c", "python $APP"]
