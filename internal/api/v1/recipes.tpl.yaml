@@ -7,7 +7,7 @@ build:
     command: mvn
     args:
       - compile
-      - com.google.cloud.tools:jib-maven-plugin:3.3.1:build
+      - com.google.cloud.tools:jib-maven-plugin:3.3.2:build
       - -Djib.from.image={{ .Image.Parent }}
       - -Djib.to.image={{ .Image.Name }}
       - -Djib.to.auth.username={{ .Image.Username }}
