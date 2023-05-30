@@ -90,7 +90,7 @@ func (c *BuildContext) Normalise() {
 }
 
 func (c *BuildContext) incrementalTag() string {
-	return fmt.Sprintf("%s-%s-%d", c.Repo.Ref, c.Repo.CommitSha[:7], time.Now().Unix())
+	return fmt.Sprintf("%s-%s-%d", strings.ReplaceAll(c.Repo.Ref, "/", "-"), c.Repo.CommitSha[:7], time.Now().Unix())
 }
 
 func (c *BuildContext) DockerCFG() string {
