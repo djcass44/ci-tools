@@ -6,8 +6,9 @@ import (
 )
 
 var command = &cobra.Command{
-	Use:   "ci",
-	Short: "normalises application build tools",
+	Use:          "ci",
+	Short:        "normalises application build tools",
+	SilenceUsage: true,
 }
 
 func init() {

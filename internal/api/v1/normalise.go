@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func (c *BuildContext) Normalise() {
@@ -40,6 +41,12 @@ func (c *BuildContext) Normalise() {
 		c.Context = "."
 	}
 	c.Go.ImportPath = os.Getenv(EnvBuildGoImportPath)
+
+	// handle the incremental tag which is used
+	// by things such as Flux2's image automation
+	if tag := c.incrementalTag(); tag != "" {
+		c.Tags = append(c.Tags, tag)
+	}
 
 	// handle extra tags
 	extraTags := strings.Split(os.Getenv(EnvBuildTags), ",")
@@ -80,6 +87,10 @@ func (c *BuildContext) Normalise() {
 	}
 	c.Cache.Enabled = cacheEnabled
 	c.Cache.Path = cachePath
+}
+
+func (c *BuildContext) incrementalTag() string {
+	return fmt.Sprintf("%s-%s-%d", c.Repo.Ref, c.Repo.CommitSha[:7], time.Now().Unix())
 }
 
 func (c *BuildContext) DockerCFG() string {
