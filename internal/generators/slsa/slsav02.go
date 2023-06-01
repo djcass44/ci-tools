@@ -20,7 +20,7 @@ func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) erro
 	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.CommitSha, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
-	log.Printf("generating SLSA provenance for ref: %s", repoURL)
+	log.Printf("generating SLSA (v0.2) provenance for ref: %s", repoURL)
 
 	baseDigest := ociutil.GetDigest(ctx.Image.Base)
 	parentDigest := ociutil.GetDigest(ctx.Image.Parent)

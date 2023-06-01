@@ -16,7 +16,8 @@ func TestExecute(t *testing.T) {
 	require.NoError(t, os.MkdirAll(filepath.Join(tmp, ".cache"), 0750))
 
 	input := &civ1.BuildContext{
-		Root: tmp,
+		ConfigPath: "./testdata/.gitlab-ci.yml",
+		Root:       tmp,
 		Image: civ1.ImageConfig{
 			Name:   "harbor.dcas.dev/docker.io/library/busybox",
 			Parent: "harbor.dcas.dev/docker.io/library/busybox",

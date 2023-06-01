@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/djcass44/ci-tools/pkg/digestof"
 	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/djcass44/ci-tools/pkg/purl"
 	"github.com/in-toto/in-toto-golang/in_toto"
@@ -20,7 +21,7 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error
 	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.CommitSha, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
-	log.Printf("generating SLSA provenance for ref: %s", repoURL)
+	log.Printf("generating SLSA (v1.0) provenance for ref: %s", repoURL)
 
 	baseDigest := ociutil.GetDigest(ctx.Image.Base)
 	parentDigest := ociutil.GetDigest(ctx.Image.Parent)
@@ -69,6 +70,22 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error
 		buildType = val
 	}
 
+	configHash, err := digestof.File(ctx.ConfigPath)
+	if err != nil {
+		return err
+	}
+
+	// write the digest file
+	outPath := filepath.Join(ctx.Root, outBuild)
+	if err := os.WriteFile(outPath, []byte(fmt.Sprintf("%s:%s@sha256:%s", ctx.Image.Name, ctx.Repo.CommitSha, digest)), 0644); err != nil {
+		return err
+	}
+
+	outHash, err := digestof.File(outPath)
+	if err != nil {
+		return err
+	}
+
 	provenance := in_toto.ProvenanceStatementSLSA1{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          in_toto.StatementInTotoV01,
@@ -77,9 +94,13 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error
 		},
 		Predicate: v1.ProvenancePredicate{
 			BuildDefinition: v1.ProvenanceBuildDefinition{
-				BuildType:            buildType,
-				ExternalParameters:   env,
-				InternalParameters:   map[string]string{},
+				BuildType:          buildType,
+				ExternalParameters: env,
+				InternalParameters: map[string]any{
+					"commands": os.Args,
+					"build":    append([]string{r.Command}, r.Args...),
+					"shell":    os.Getenv("SHELL"),
+				},
 				ResolvedDependencies: materials,
 			},
 			RunDetails: v1.ProvenanceRunDetails{
@@ -90,6 +111,16 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error
 					InvocationID: ctx.BuildID,
 					StartedOn:    &buildStart,
 					FinishedOn:   &buildEnd,
+				},
+				Byproducts: []v1.ResourceDescriptor{
+					{
+						URI:    ctx.ConfigPath,
+						Digest: common.DigestSet{digestSha256: configHash},
+					},
+					{
+						URI:    outPath,
+						Digest: common.DigestSet{digestSha256: outHash},
+					},
 				},
 			},
 		},
@@ -102,10 +133,6 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error
 
 	// write the provenance file
 	if err := os.WriteFile(filepath.Join(ctx.Root, outProvenance), data, 0644); err != nil {
-		return err
-	}
-	// write the digest file
-	if err := os.WriteFile(filepath.Join(ctx.Root, outBuild), []byte(fmt.Sprintf("%s:%s@sha256:%s", ctx.Image.Name, ctx.Repo.CommitSha, digest)), 0644); err != nil {
 		return err
 	}
 

@@ -26,9 +26,10 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 		tags = append(tags, strings.ReplaceAll(c.CommitBranch, "/", "-"))
 	}
 	return v1.BuildContext{
-		BuildID: c.JobID,
-		Root:    c.ProjectDir,
-		Context: c.ProjectPath,
+		BuildID:    c.JobID,
+		Root:       c.ProjectDir,
+		Context:    c.ProjectPath,
+		ConfigPath: c.ConfigPath,
 		Image: v1.ImageConfig{
 			Name:     imagePath,
 			Base:     c.JobImage,

@@ -8,6 +8,8 @@ type GitLabContext struct {
 	ProjectPath   string `env:"PROJECT_PATH"`
 	DefaultBranch string `env:"CI_DEFAULT_BRANCH"`
 
+	ConfigPath string `env:"CI_CONFIG_PATH"`
+
 	JobImage     string `env:"CI_JOB_IMAGE"`
 	JobID        string `env:"CI_JOB_ID"`
 	JobStartedAt string `env:"CI_JOB_STARTED_AT"`

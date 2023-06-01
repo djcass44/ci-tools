@@ -1,0 +1,2 @@
+include:
+  - component: gitlab.com/foo/bar@v1.2.3

@@ -46,6 +46,7 @@ type BuildContext struct {
 	Cache      BuildCache
 	StartTime  string
 	Provider   string
+	ConfigPath string
 }
 
 type BuildRepo struct {
