@@ -33,6 +33,8 @@ const (
 	flagSkipCosignVerify = "skip-cosign-verify"
 
 	flagCosignPublicKey = "cosign-verify-key"
+	flagCosignOffline   = "cosign-offline"
+	flagSLSAVersion     = "slsa-version"
 )
 
 func init() {
@@ -46,6 +48,8 @@ func init() {
 	buildCmd.Flags().Bool(flagSkipCosignVerify, false, "skip verifying the parent image")
 
 	buildCmd.Flags().String(flagCosignPublicKey, "", "path to the Cosign public key used for verifying parent images")
+	buildCmd.Flags().Bool(flagCosignOffline, true, "stops Cosign from communicating with any online resources when verifying images")
+	buildCmd.Flags().String(flagSLSAVersion, "0.2", "slsa version (1.0 or 0.2)")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagRecipe)
@@ -68,6 +72,12 @@ func build(cmd *cobra.Command, _ []string) error {
 	extraTemplates := append([]string{tpl}, strings.Split(extras, ",")...)
 
 	cosignPub, _ := cmd.Flags().GetString(flagCosignPublicKey)
+	cosignOffline, err := cmd.Flags().GetBool(flagCosignOffline)
+	if err != nil {
+		log.Println("unable to retrieve the value of the --cosign-offline flag")
+		return err
+	}
+	slsaVersion, _ := cmd.Flags().GetString(flagSLSAVersion)
 
 	// figure out what we need to do
 	log.Printf("running recipe: %s", arch)
@@ -111,7 +121,7 @@ func build(cmd *cobra.Command, _ []string) error {
 
 	// verify the parent image if one has been specified
 	if context.Image.Parent != "" && !skipCosignVerify && cosignPub != "" {
-		if err := sign.Verify(context, context.Image.Parent, cosignPub); err != nil {
+		if err := sign.Verify(context, context.Image.Parent, cosignPub, cosignOffline); err != nil {
 			log.Print("failed to verify Cosign signature on parent image")
 			return err
 		}
@@ -131,7 +141,11 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	if !skipSLSA {
-		if err := slsa.Execute(context, &recipe, digest); err != nil {
+		f := slsa.ExecuteV02
+		if slsaVersion == "1.0" {
+			f = slsa.ExecuteV1
+		}
+		if err := f(context, &recipe, digest); err != nil {
 			return err
 		}
 	}

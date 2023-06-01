@@ -6,15 +6,15 @@ import (
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
-	"github.com/sigstore/cosign/cmd/cosign/cli/sign"
-	"github.com/sigstore/cosign/pkg/cosign"
-	ociremote "github.com/sigstore/cosign/pkg/oci/remote"
-	"github.com/sigstore/cosign/pkg/signature"
+	"github.com/sigstore/cosign/v2/cmd/cosign/cli/sign"
+	"github.com/sigstore/cosign/v2/pkg/cosign"
+	ociremote "github.com/sigstore/cosign/v2/pkg/oci/remote"
+	"github.com/sigstore/cosign/v2/pkg/signature"
 	"log"
 	"strings"
 )
 
-func Verify(ctx *civ1.BuildContext, target, key string) error {
+func Verify(ctx *civ1.BuildContext, target, key string, offline bool) error {
 	ref, err := name.ParseReference(target)
 	if err != nil {
 		return err
@@ -42,6 +42,9 @@ func Verify(ctx *civ1.BuildContext, target, key string) error {
 	signatures, _, err := cosign.VerifyImageSignatures(context.TODO(), ref, &cosign.CheckOpts{
 		RegistryClientOpts: opts,
 		SigVerifier:        verifier,
+		Offline:            offline,
+		IgnoreSCT:          offline,
+		IgnoreTlog:         offline,
 	})
 	if err != nil {
 		return err
