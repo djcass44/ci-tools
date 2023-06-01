@@ -32,9 +32,10 @@ const (
 	flagSkipSLSA         = "skip-slsa"
 	flagSkipCosignVerify = "skip-cosign-verify"
 
-	flagCosignPublicKey = "cosign-verify-key"
-	flagCosignOffline   = "cosign-offline"
-	flagSLSAVersion     = "slsa-version"
+	flagCosignPublicKey    = "cosign-verify-key"
+	flagCosignPublicKeyDir = "cosign-verify-dir"
+	flagCosignOffline      = "cosign-offline"
+	flagSLSAVersion        = "slsa-version"
 )
 
 func init() {
@@ -48,12 +49,14 @@ func init() {
 	buildCmd.Flags().Bool(flagSkipCosignVerify, false, "skip verifying the parent image")
 
 	buildCmd.Flags().String(flagCosignPublicKey, "", "path to the Cosign public key used for verifying parent images")
-	buildCmd.Flags().Bool(flagCosignOffline, true, "stops Cosign from communicating with any online resources when verifying images")
+	buildCmd.Flags().String(flagCosignPublicKeyDir, "", "path to the directory containing Cosign public keys used for verifying parent images")
+	buildCmd.Flags().Bool(flagCosignOffline, true, "stops Cosign from communicating with any online resources (e.g., fulcio, rekor) when verifying images")
 	buildCmd.Flags().String(flagSLSAVersion, "0.2", "slsa version (1.0 or 0.2)")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagRecipe)
-	buildCmd.MarkFlagsMutuallyExclusive(flagCosignPublicKey, flagSkipCosignVerify)
+
+	buildCmd.MarkFlagsMutuallyExclusive(flagCosignPublicKey, flagCosignPublicKeyDir, flagSkipCosignVerify)
 	buildCmd.MarkFlagsMutuallyExclusive(flagRecipeTemplate, flagRecipeTemplateExtra)
 }
 
@@ -72,6 +75,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	extraTemplates := append([]string{tpl}, strings.Split(extras, ",")...)
 
 	cosignPub, _ := cmd.Flags().GetString(flagCosignPublicKey)
+	cosignPubDir, _ := cmd.Flags().GetString(flagCosignPublicKeyDir)
 	cosignOffline, err := cmd.Flags().GetBool(flagCosignOffline)
 	if err != nil {
 		log.Println("unable to retrieve the value of the --cosign-offline flag")
@@ -120,10 +124,18 @@ func build(cmd *cobra.Command, _ []string) error {
 	cache.Execute(context)
 
 	// verify the parent image if one has been specified
-	if context.Image.Parent != "" && !skipCosignVerify && cosignPub != "" {
-		if err := sign.Verify(context, context.Image.Parent, cosignPub, cosignOffline); err != nil {
-			log.Print("failed to verify Cosign signature on parent image")
-			return err
+	if context.Image.Parent != "" && !skipCosignVerify {
+		// if an explicit key has been given, use that
+		if cosignPub != "" {
+			if err := sign.Verify(context, context.Image.Parent, cosignPub, cosignOffline); err != nil {
+				log.Print("failed to verify Cosign signature on parent image")
+				return err
+			}
+		} else {
+			if err := sign.VerifyAny(context, context.Image.Parent, cosignPubDir, cosignOffline); err != nil {
+				log.Print("failed to verify Cosign signature on parent image")
+				return err
+			}
 		}
 	}
 

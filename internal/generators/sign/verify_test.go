@@ -20,3 +20,8 @@ func TestVerify(t *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestVerifyAny(t *testing.T) {
+	err := VerifyAny(&civ1.BuildContext{}, "gcr.io/kaniko-project/executor:debug", "./testdata", true)
+	assert.NoError(t, err)
+}
