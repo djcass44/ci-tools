@@ -19,11 +19,15 @@ var verifyCmd = &cobra.Command{
 }
 
 const (
-	flagExpectedBuildType = "expected-build-type"
+	flagExpectedBuildType            = "expected-build-type"
+	flagExpectedSourceRepositoryPURL = "expected-source-repo-purl"
 )
 
 func init() {
 	verifyCmd.Flags().String(flagExpectedBuildType, slsa.DefaultBuildType, "expected value for 'buildType'")
+	verifyCmd.Flags().String(flagExpectedSourceRepositoryPURL, "", "expected package-url for the source repository")
+
+	_ = verifyCmd.MarkFlagRequired(flagExpectedSourceRepositoryPURL)
 }
 
 func verifyFunc(cmd *cobra.Command, args []string) error {
@@ -31,6 +35,7 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 
 	// flags
 	expectedBuildType, _ := cmd.Flags().GetString(flagExpectedBuildType)
+	expectedSourceRepo, _ := cmd.Flags().GetString(flagExpectedSourceRepositoryPURL)
 
 	// read the statement
 	statement, err := loadFile(filename)
@@ -39,10 +44,13 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	buildTypeValidator := validators.BuildTypeValidator{Expected: expectedBuildType}
+	sourceRepoValidator := validators.SourceRepoValidator{Expected: expectedSourceRepo}
 
 	assertions := map[string]validators.ValidateFunc{
-		"Build type":          buildTypeValidator.Validate,
-		"Internal parameters": validators.InternalParameterValidator,
+		"Build type":                  buildTypeValidator.Validate,
+		"Internal parameters":         validators.InternalParameterValidator,
+		"Predicate type":              validators.PredicateTypeValidator,
+		"Canonical source repository": sourceRepoValidator.Validate,
 	}
 
 	for k, v := range assertions {
