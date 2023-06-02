@@ -1,0 +1,34 @@
+{
+  "_type": "https://in-toto.io/Statement/v0.1",
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [],
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://github.com/djcass44/ci-tools@v1",
+      "externalParameters": {
+        "entryPoint": "ci",
+        "source": "pkg:github/example.org@sha1:latest",
+        "which_declare": ""
+      },
+      "internalParameters": {
+        "build": [
+          ""
+        ],
+        "commands": [],
+        "shell": "/bin/bash"
+      },
+      "resolvedDependencies": []
+    },
+    "runDetails": {
+      "builder": {
+        "id": "foo.bar"
+      },
+      "metadata": {
+        "invocationID": "1",
+        "startedOn": "2021-11-05T20:12:38Z",
+        "finishedOn": "2023-06-02T21:23:38.027509251+10:00"
+      },
+      "byproducts": []
+    }
+  }
+}

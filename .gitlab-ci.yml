@@ -57,7 +57,7 @@ integrate ko:
       
       wget -qO- "https://github.com/ko-build/ko/releases/download/v0.12.0/ko_0.12.0_Linux_x86_64.tar.gz" | tar -xvz ko
       install ./ko "$CI_PROJECT_DIR/bin/ko"
-    - ci build --recipe com.github.google.ko --cosign-verify-key="$CI_PROJECT_DIR/internal/generators/sign/testdata/distroless.pub"
+    - ci build --recipe com.github.google.ko --cosign-verify-key="$CI_PROJECT_DIR/internal/generators/sign/testdata/distroless.pub"  --slsa-version 1.0
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: never
@@ -91,7 +91,7 @@ integrate nib:
       
       wget -qO- "https://github.com/djcass44/nib/releases/download/v1.0.2/nib_1.0.2_linux_amd64.tar.gz" | tar -xvz nib
       install ./nib "$CI_PROJECT_DIR/bin/nib"
-    - ci build --recipe com.github.djcass44.nib --skip-cosign-verify=true
+    - ci build --recipe com.github.djcass44.nib --skip-cosign-verify=true  --slsa-version 1.0
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: never
@@ -151,7 +151,7 @@ integrate buildkit:
       - build.txt
   script:
     - ./ci dockerfile --name python/micropipenv@v1
-    - ./ci build --recipe com.github.moby.buildkit
+    - ./ci build --recipe com.github.moby.buildkit --slsa-version 1.0
   rules:
     - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
       when: never

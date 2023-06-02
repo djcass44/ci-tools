@@ -1,0 +1,147 @@
+{
+  "_type": "https://in-toto.io/Statement/v0.1",
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [
+    {
+      "name": "pkg:oci/busybox@sha256:deadbeef?repository_url=harbor.dcas.dev/docker.io/library/busybox",
+      "digest": {
+        "sha256": "deadbeef"
+      }
+    }
+  ],
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://github.com/djcass44/ci-tools@v1",
+      "externalParameters": {
+        "AR": "",
+        "CC": "",
+        "CGO_ENABLED": "",
+        "CXX": "",
+        "DBUS_SESSION_BUS_ADDRESS": "",
+        "DEBUGINFOD_URLS": "",
+        "DESKTOP_SESSION": "",
+        "DISPLAY": "",
+        "EDITOR": "",
+        "GCCGO": "",
+        "GDMSESSION": "",
+        "GDM_LANG": "",
+        "GIO_LAUNCHED_DESKTOP_FILE": "",
+        "GIO_LAUNCHED_DESKTOP_FILE_PID": "",
+        "GJS_DEBUG_OUTPUT": "",
+        "GJS_DEBUG_TOPICS": "",
+        "GNOME_SETUP_DISPLAY": "",
+        "GO111MODULE": "",
+        "GOAMD64": "",
+        "GOARCH": "",
+        "GOBIN": "",
+        "GOCACHE": "",
+        "GOENV": "",
+        "GOHOSTARCH": "",
+        "GOHOSTOS": "",
+        "GOMODCACHE": "",
+        "GOOS": "",
+        "GOPATH": "",
+        "GOPROXY": "",
+        "GOROOT": "",
+        "GOSUMDB": "",
+        "GOTOOLDIR": "",
+        "GOVERSION": "",
+        "HISTCONTROL": "",
+        "HISTSIZE": "",
+        "HOME": "",
+        "HOSTNAME": "",
+        "INVOCATION_ID": "",
+        "JOURNAL_STREAM": "",
+        "LANG": "",
+        "LESSOPEN": "",
+        "LOGNAME": "",
+        "MAIL": "",
+        "MANAGERPID": "",
+        "MOZ_USE_XINPUT2": "",
+        "NODE_PATH": "",
+        "NPM_PACKAGES": "",
+        "PATH": "",
+        "PWD": "",
+        "QT_IM_MODULE": "",
+        "SESSION_MANAGER": "",
+        "SHELL": "",
+        "SHLVL": "",
+        "SSH_AUTH_SOCK": "",
+        "SYSTEMD_EXEC_PID": "",
+        "TERM": "",
+        "USER": "",
+        "USERNAME": "",
+        "WAYLAND_DISPLAY": "",
+        "XAUTHORITY": "",
+        "XDG_CURRENT_DESKTOP": "",
+        "XDG_DATA_DIRS": "",
+        "XDG_MENU_PREFIX": "",
+        "XDG_RUNTIME_DIR": "",
+        "XDG_SESSION_CLASS": "",
+        "XDG_SESSION_DESKTOP": "",
+        "XDG_SESSION_TYPE": "",
+        "XMODIFIERS": "",
+        "entryPoint": "ci",
+        "source": "pkg:github/example.org@sha1:latest",
+        "which_declare": ""
+      },
+      "internalParameters": {
+        "build": [
+          ""
+        ],
+        "commands": [
+          "/home/django/.cache/JetBrains/GoLand2023.1/tmp/GoLand/___TestExecute_version_1_0_in_github_com_djcass44_ci_tools_internal_generators_slsa.test",
+          "-test.v",
+          "-test.paniconexit0",
+          "-test.run",
+          "^\\QTestExecute\\E$/^\\Qversion_1.0\\E$"
+        ],
+        "shell": "/bin/bash"
+      },
+      "resolvedDependencies": [
+        {
+          "uri": "pkg:github/example.org@sha1:latest",
+          "digest": {
+            "sha1": "latest"
+          }
+        },
+        {
+          "uri": "pkg:oci/busybox@sha256:560af6915bfc8d7630e50e212e08242d37b63bd5c1ccf9bd4acccf116e262d5b?repository_url=harbor.dcas.dev/docker.io/library/busybox",
+          "digest": {
+            "sha256": "560af6915bfc8d7630e50e212e08242d37b63bd5c1ccf9bd4acccf116e262d5b"
+          }
+        },
+        {
+          "uri": "pkg:oci/busybox@sha256:560af6915bfc8d7630e50e212e08242d37b63bd5c1ccf9bd4acccf116e262d5b?repository_url=harbor.dcas.dev/docker.io/library/busybox",
+          "digest": {
+            "sha256": "560af6915bfc8d7630e50e212e08242d37b63bd5c1ccf9bd4acccf116e262d5b"
+          }
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "foo.bar"
+      },
+      "metadata": {
+        "invocationID": "1",
+        "startedOn": "2021-11-05T20:12:38Z",
+        "finishedOn": "2023-06-02T21:23:38.027509251+10:00"
+      },
+      "byproducts": [
+        {
+          "uri": "./testdata/.gitlab-ci.yml",
+          "digest": {
+            "sha256": "f6d808328f865c7b6a7a95709e24b3293f4034df1ff458a9786970daf949d718"
+          }
+        },
+        {
+          "uri": "/tmp/TestExecute638742021/001/build.txt",
+          "digest": {
+            "sha256": "66bf9efc85bbe1eac3fdf5be1cffcf044190925cf6d9f030068404ff2c8f380e"
+          }
+        }
+      ]
+    }
+  }
+}

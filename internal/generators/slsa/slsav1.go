@@ -65,7 +65,7 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error
 	}
 	buildEnd := time.Now()
 
-	buildType := defaultBuildType
+	buildType := DefaultBuildType
 	if val := os.Getenv(civ1.EnvBuildSLSABuildType); val != "" {
 		buildType = val
 	}
