@@ -19,15 +19,15 @@ var verifyCmd = &cobra.Command{
 }
 
 const (
-	flagExpectedBuildType            = "expected-build-type"
-	flagExpectedSourceRepositoryPURL = "expected-source-repo-purl"
+	flagExpectedBuildType        = "expected-build-type"
+	flagExpectedSourceRepository = "expected-source-repo"
 )
 
 func init() {
 	verifyCmd.Flags().String(flagExpectedBuildType, slsa.DefaultBuildType, "expected value for 'buildType'")
-	verifyCmd.Flags().String(flagExpectedSourceRepositoryPURL, "", "expected package-url for the source repository")
+	verifyCmd.Flags().String(flagExpectedSourceRepository, "", "expected url (package-url or http) for the source repository")
 
-	_ = verifyCmd.MarkFlagRequired(flagExpectedSourceRepositoryPURL)
+	_ = verifyCmd.MarkFlagRequired(flagExpectedSourceRepository)
 }
 
 func verifyFunc(cmd *cobra.Command, args []string) error {
@@ -35,7 +35,7 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 
 	// flags
 	expectedBuildType, _ := cmd.Flags().GetString(flagExpectedBuildType)
-	expectedSourceRepo, _ := cmd.Flags().GetString(flagExpectedSourceRepositoryPURL)
+	expectedSourceRepo, _ := cmd.Flags().GetString(flagExpectedSourceRepository)
 
 	// read the statement
 	statement, err := loadFile(filename)

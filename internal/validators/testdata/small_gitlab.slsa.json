@@ -7,7 +7,7 @@
       "buildType": "https://github.com/djcass44/ci-tools@v1",
       "externalParameters": {
         "entryPoint": "ci",
-        "source": "pkg:github/zoo/bar@deadbeef",
+        "source": "pkg:gitlab/foo%2Fbar/zoo@deadbeef",
         "which_declare": ""
       },
       "internalParameters": {

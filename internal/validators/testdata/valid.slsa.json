@@ -82,7 +82,7 @@
         "XDG_SESSION_TYPE": "",
         "XMODIFIERS": "",
         "entryPoint": "ci",
-        "source": "pkg:github/example.org@sha1:latest",
+        "source": "pkg:github/foo/bar@deadbeef",
         "which_declare": ""
       },
       "internalParameters": {
@@ -100,7 +100,7 @@
       },
       "resolvedDependencies": [
         {
-          "uri": "pkg:github/example.org@sha1:latest",
+          "uri": "pkg:github/foo/bar@deadbeef",
           "digest": {
             "sha1": "latest"
           }
