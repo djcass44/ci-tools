@@ -31,7 +31,7 @@ func Execute(ctx *civ1.BuildContext, digest string) error {
 	if err != nil {
 		return err
 	}
-	syftImage := image.New(img, ctx.Cache.Path, image.WithTags(ctx.Tags...))
+	syftImage := image.New(img, "", image.WithTags(ctx.Tags...))
 	if err := syftImage.Read(); err != nil {
 		return err
 	}
