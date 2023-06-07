@@ -1,0 +1,247 @@
+{
+  "_type": "https://in-toto.io/Statement/v0.1",
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "subject": [
+    {
+      "name": "pkg:oci/samples-static@sha256:a1ea380ec53365e57d37d20f4839497836bcb85d6d9e4c7716bb0e3f11a2eec7?repository_url=registry.dcas.dev/open-source/ci-tools/samples-static",
+      "digest": {
+        "sha256": "a1ea380ec53365e57d37d20f4839497836bcb85d6d9e4c7716bb0e3f11a2eec7"
+      }
+    }
+  ],
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://github.com/djcass44/ci-tools@v1",
+      "externalParameters": {
+        "AUTO_DEVOPS_REGISTRY": "",
+        "AUTO_DEVOPS_REGISTRY_GITLAB": "",
+        "AUTO_DEVOPS_SAST_API_TOKEN": "",
+        "BUILD_IMAGE_PARENT": "",
+        "CI": "",
+        "CI_API_GRAPHQL_URL": "",
+        "CI_API_V4_URL": "",
+        "CI_BUILDS_DIR": "",
+        "CI_COMMIT_AUTHOR": "",
+        "CI_COMMIT_BEFORE_SHA": "",
+        "CI_COMMIT_BRANCH": "",
+        "CI_COMMIT_DESCRIPTION": "",
+        "CI_COMMIT_MESSAGE": "",
+        "CI_COMMIT_REF_NAME": "",
+        "CI_COMMIT_REF_PROTECTED": "",
+        "CI_COMMIT_REF_SLUG": "",
+        "CI_COMMIT_SHA": "",
+        "CI_COMMIT_SHORT_SHA": "",
+        "CI_COMMIT_TIMESTAMP": "",
+        "CI_COMMIT_TITLE": "",
+        "CI_CONCURRENT_ID": "",
+        "CI_CONCURRENT_PROJECT_ID": "",
+        "CI_CONFIG_PATH": "",
+        "CI_DEFAULT_BRANCH": "",
+        "CI_DEPENDENCY_PROXY_DIRECT_GROUP_IMAGE_PREFIX": "",
+        "CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX": "",
+        "CI_DEPENDENCY_PROXY_PASSWORD": "",
+        "CI_DEPENDENCY_PROXY_SERVER": "",
+        "CI_DEPENDENCY_PROXY_USER": "",
+        "CI_DISPOSABLE_ENVIRONMENT": "",
+        "CI_JOB_ID": "",
+        "CI_JOB_IMAGE": "",
+        "CI_JOB_JWT": "",
+        "CI_JOB_JWT_V1": "",
+        "CI_JOB_JWT_V2": "",
+        "CI_JOB_NAME": "",
+        "CI_JOB_NAME_SLUG": "",
+        "CI_JOB_STAGE": "",
+        "CI_JOB_STARTED_AT": "",
+        "CI_JOB_STATUS": "",
+        "CI_JOB_TIMEOUT": "",
+        "CI_JOB_TOKEN": "",
+        "CI_JOB_URL": "",
+        "CI_NODE_TOTAL": "",
+        "CI_PAGES_DOMAIN": "",
+        "CI_PAGES_URL": "",
+        "CI_PIPELINE_CREATED_AT": "",
+        "CI_PIPELINE_ID": "",
+        "CI_PIPELINE_IID": "",
+        "CI_PIPELINE_SOURCE": "",
+        "CI_PIPELINE_URL": "",
+        "CI_PROJECT_CLASSIFICATION_LABEL": "",
+        "CI_PROJECT_DESCRIPTION": "",
+        "CI_PROJECT_DIR": "",
+        "CI_PROJECT_ID": "",
+        "CI_PROJECT_NAME": "",
+        "CI_PROJECT_NAMESPACE": "",
+        "CI_PROJECT_NAMESPACE_ID": "",
+        "CI_PROJECT_PATH": "",
+        "CI_PROJECT_PATH_SLUG": "",
+        "CI_PROJECT_REPOSITORY_LANGUAGES": "",
+        "CI_PROJECT_ROOT_NAMESPACE": "",
+        "CI_PROJECT_TITLE": "",
+        "CI_PROJECT_URL": "",
+        "CI_PROJECT_VISIBILITY": "",
+        "CI_REGISTRY": "",
+        "CI_REGISTRY_IMAGE": "",
+        "CI_REGISTRY_PASSWORD": "",
+        "CI_REGISTRY_USER": "",
+        "CI_REPOSITORY_URL": "",
+        "CI_RUNNER_DESCRIPTION": "",
+        "CI_RUNNER_EXECUTABLE_ARCH": "",
+        "CI_RUNNER_ID": "",
+        "CI_RUNNER_REVISION": "",
+        "CI_RUNNER_SHORT_TOKEN": "",
+        "CI_RUNNER_TAGS": "",
+        "CI_RUNNER_VERSION": "",
+        "CI_SERVER": "",
+        "CI_SERVER_HOST": "",
+        "CI_SERVER_NAME": "",
+        "CI_SERVER_PORT": "",
+        "CI_SERVER_PROTOCOL": "",
+        "CI_SERVER_REVISION": "",
+        "CI_SERVER_SHELL_SSH_HOST": "",
+        "CI_SERVER_SHELL_SSH_PORT": "",
+        "CI_SERVER_TLS_CA_FILE": "",
+        "CI_SERVER_URL": "",
+        "CI_SERVER_VERSION": "",
+        "CI_SERVER_VERSION_MAJOR": "",
+        "CI_SERVER_VERSION_MINOR": "",
+        "CI_SERVER_VERSION_PATCH": "",
+        "CI_TEMPLATE_REGISTRY_HOST": "",
+        "CNB_SIGN_ENABLED": "",
+        "COSIGN_PASSWORD": "",
+        "COSIGN_PRIVATE_KEY": "",
+        "COSIGN_PUBLIC_KEY": "",
+        "ENV": "",
+        "FF_CMD_DISABLE_DELAYED_ERROR_LEVEL_EXPANSION": "",
+        "FF_DISABLE_POWERSHELL_STDIN": "",
+        "FF_DISABLE_UMASK_FOR_DOCKER_EXECUTOR": "",
+        "FF_ENABLE_BASH_EXIT_CODE_CHECK": "",
+        "FF_ENABLE_JOB_CLEANUP": "",
+        "FF_KUBERNETES_HONOR_ENTRYPOINT": "",
+        "FF_NETWORK_PER_BUILD": "",
+        "FF_POSIXLY_CORRECT_ESCAPES": "",
+        "FF_RESOLVE_FULL_TLS_CHAIN": "",
+        "FF_SCRIPT_SECTIONS": "",
+        "FF_SET_PERMISSIONS_BEFORE_CLEANUP": "",
+        "FF_SKIP_NOOP_BUILD_STAGES": "",
+        "FF_USE_ADVANCED_POD_SPEC_CONFIGURATION": "",
+        "FF_USE_DIRECT_DOWNLOAD": "",
+        "FF_USE_DYNAMIC_TRACE_FORCE_SEND_INTERVAL": "",
+        "FF_USE_FASTZIP": "",
+        "FF_USE_IMPROVED_URL_MASKING": "",
+        "FF_USE_LEGACY_KUBERNETES_EXECUTION_STRATEGY": "",
+        "FF_USE_NEW_BASH_EVAL_STRATEGY": "",
+        "FF_USE_NEW_SHELL_ESCAPE": "",
+        "FF_USE_POD_ACTIVE_DEADLINE_SECONDS": "",
+        "FF_USE_POWERSHELL_PATH_RESOLVER": "",
+        "FF_USE_WINDOWS_LEGACY_PROCESS_STRATEGY": "",
+        "GITHUB_MIRROR": "",
+        "GITLAB_CI": "",
+        "GITLAB_COM_GITLAB_RUNNER_PORT": "",
+        "GITLAB_COM_GITLAB_RUNNER_PORT_9252_TCP": "",
+        "GITLAB_COM_GITLAB_RUNNER_PORT_9252_TCP_ADDR": "",
+        "GITLAB_COM_GITLAB_RUNNER_PORT_9252_TCP_PORT": "",
+        "GITLAB_COM_GITLAB_RUNNER_PORT_9252_TCP_PROTO": "",
+        "GITLAB_COM_GITLAB_RUNNER_SERVICE_HOST": "",
+        "GITLAB_COM_GITLAB_RUNNER_SERVICE_PORT": "",
+        "GITLAB_COM_GITLAB_RUNNER_SERVICE_PORT_METRICS": "",
+        "GITLAB_DCAS_DEV_GITLAB_RUNNER_PORT": "",
+        "GITLAB_DCAS_DEV_GITLAB_RUNNER_PORT_9252_TCP": "",
+        "GITLAB_DCAS_DEV_GITLAB_RUNNER_PORT_9252_TCP_ADDR": "",
+        "GITLAB_DCAS_DEV_GITLAB_RUNNER_PORT_9252_TCP_PORT": "",
+        "GITLAB_DCAS_DEV_GITLAB_RUNNER_PORT_9252_TCP_PROTO": "",
+        "GITLAB_DCAS_DEV_GITLAB_RUNNER_SERVICE_HOST": "",
+        "GITLAB_DCAS_DEV_GITLAB_RUNNER_SERVICE_PORT": "",
+        "GITLAB_DCAS_DEV_GITLAB_RUNNER_SERVICE_PORT_METRICS": "",
+        "GITLAB_FEATURES": "",
+        "GITLAB_USER_EMAIL": "",
+        "GITLAB_USER_ID": "",
+        "GITLAB_USER_LOGIN": "",
+        "GITLAB_USER_NAME": "",
+        "GOPROXY": "",
+        "HOME": "",
+        "HOSTNAME": "",
+        "KUBERNETES_PORT": "",
+        "KUBERNETES_PORT_443_TCP": "",
+        "KUBERNETES_PORT_443_TCP_ADDR": "",
+        "KUBERNETES_PORT_443_TCP_PORT": "",
+        "KUBERNETES_PORT_443_TCP_PROTO": "",
+        "KUBERNETES_SERVICE_HOST": "",
+        "KUBERNETES_SERVICE_PORT": "",
+        "KUBERNETES_SERVICE_PORT_HTTPS": "",
+        "NODE_VERSION": "",
+        "NPM_PACKAGES": "",
+        "OLDPWD": "",
+        "PATH": "",
+        "PROJECT_PATH": "",
+        "PWD": "",
+        "RUNNER_TEMP_PROJECT_DIR": "",
+        "SHLVL": "",
+        "YARN_VERSION": "",
+        "entryPoint": "ci",
+        "source": "pkg:gitlab/open-source/ci-tools@sha1:2d378f7473652d29ee6e2f2fe03130e70933a0f8?repository_url=gitlab.dcas.dev#samples/static"
+      },
+      "internalParameters": {
+        "build": [
+          "nib",
+          "build",
+          "-t",
+          "2d378f7473652d29ee6e2f2fe03130e70933a0f8,2d378f74,latest,main,main-2d378f7-1685709547",
+          "samples/static"
+        ],
+        "commands": [
+          "ci",
+          "build",
+          "--recipe",
+          "com.github.djcass44.nib",
+          "--skip-cosign-verify=true",
+          "--slsa-version",
+          "1.0"
+        ],
+        "shell": ""
+      },
+      "resolvedDependencies": [
+        {
+          "uri": "pkg:gitlab/open-source/ci-tools@sha1:2d378f7473652d29ee6e2f2fe03130e70933a0f8?repository_url=gitlab.dcas.dev#samples/static",
+          "digest": {
+            "sha1": "2d378f7473652d29ee6e2f2fe03130e70933a0f8"
+          }
+        },
+        {
+          "uri": "pkg:oci/node@sha256:e8b83cb538cc11a1ea7c8d787d16ba37663a19cd1223b4b52ed4a251055d92f6?repository_url=harbor.dcas.dev/registry.gitlab.com/av1o/base-images/node\u0026tag=lts",
+          "digest": {
+            "sha256": "e8b83cb538cc11a1ea7c8d787d16ba37663a19cd1223b4b52ed4a251055d92f6"
+          }
+        },
+        {
+          "uri": "pkg:oci/srv@sha256:ec3f51e675c96a693ac2521cc289d98a72062bbea8bbab65ab34165e5daa67a0?repository_url=harbor.dcas.dev/ghcr.io/djcass44/nib/srv\u0026tag=v1.0.2",
+          "digest": {
+            "sha256": "ec3f51e675c96a693ac2521cc289d98a72062bbea8bbab65ab34165e5daa67a0"
+          }
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "com.github.djcass44.nib"
+      },
+      "metadata": {
+        "invocationID": "30888",
+        "startedOn": "2023-06-02T12:44:45Z",
+        "finishedOn": "2023-06-02T12:40:09.20651182Z"
+      },
+      "byproducts": [
+        {
+          "uri": ".gitlab-ci.yml",
+          "digest": {
+            "sha256": "d1f832120bf6b69f786df59580af744741e9a0df8ddaa4fbf3533f0d01b22158"
+          }
+        },
+        {
+          "uri": "/builds/open-source/ci-tools/build.txt",
+          "digest": {
+            "sha256": "9480a13774fcb0e131f7df597cb7d2c21249df6debb169a15a353f711a282b64"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -12,10 +12,11 @@ import (
 )
 
 var verifyCmd = &cobra.Command{
-	Use:   "verify",
-	Short: "verify SLSA provenance",
-	RunE:  verifyFunc,
-	Args:  cobra.ExactArgs(1),
+	Use:    "verify",
+	Short:  "verify SLSA provenance",
+	RunE:   verifyFunc,
+	Args:   cobra.ExactArgs(1),
+	Hidden: true,
 }
 
 const (
@@ -61,6 +62,12 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 		}
 		log.Printf("%s... SUCCESS", k)
 	}
+
+	if err := slsa.VSA(statement); err != nil {
+		log.Printf("failed to generate VSA")
+		return err
+	}
+
 	return nil
 }
 
