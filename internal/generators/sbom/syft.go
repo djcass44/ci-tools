@@ -31,7 +31,13 @@ func Execute(ctx *civ1.BuildContext, digest string) error {
 	if err != nil {
 		return err
 	}
-	syftImage := image.New(img, "", image.WithTags(ctx.Tags...))
+	// create a temporary directory that we can give
+	// to syft for caching
+	tempDir, err := os.MkdirTemp("", "syft-*")
+	if err != nil {
+		return err
+	}
+	syftImage := image.New(img, tempDir, image.WithTags(ctx.Tags...))
 	if err := syftImage.Read(); err != nil {
 		return err
 	}
