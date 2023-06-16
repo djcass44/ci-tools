@@ -37,7 +37,20 @@ func TestExecute(t *testing.T) {
 	}
 
 	t.Run("version 0.2", func(t *testing.T) {
-		err := slsa.ExecuteV02(input, &civ1.BuildRecipe{}, "deadbeef")
+		err := slsa.ExecuteV02(input, &civ1.BuildRecipe{}, "deadbeef", false)
+		assert.NoError(t, err)
+
+		data, err := os.ReadFile(filepath.Join(tmp, "provenance.slsa.json"))
+		assert.NoError(t, err)
+		t.Log(string(data))
+
+		data, err = os.ReadFile(filepath.Join(tmp, "build.txt"))
+		assert.NoError(t, err)
+		t.Log(string(data))
+	})
+
+	t.Run("version 0.2 predicate", func(t *testing.T) {
+		err := slsa.ExecuteV02(input, &civ1.BuildRecipe{}, "deadbeef", true)
 		assert.NoError(t, err)
 
 		data, err := os.ReadFile(filepath.Join(tmp, "provenance.slsa.json"))
@@ -50,7 +63,7 @@ func TestExecute(t *testing.T) {
 	})
 
 	t.Run("version 1.0", func(t *testing.T) {
-		err := slsa.ExecuteV1(input, &civ1.BuildRecipe{}, "deadbeef")
+		err := slsa.ExecuteV1(input, &civ1.BuildRecipe{}, "deadbeef", false)
 		assert.NoError(t, err)
 
 		data, err := os.ReadFile(filepath.Join(tmp, "provenance.slsa.json"))

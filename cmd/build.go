@@ -36,6 +36,7 @@ const (
 	flagCosignPublicKeyDir = "cosign-verify-dir"
 	flagCosignOffline      = "cosign-offline"
 	flagSLSAVersion        = "slsa-version"
+	flagSLSAPredicateOnly  = "slsa-predicate-only"
 )
 
 func init() {
@@ -52,6 +53,7 @@ func init() {
 	buildCmd.Flags().String(flagCosignPublicKeyDir, "", "path to the directory containing Cosign public keys used for verifying parent images")
 	buildCmd.Flags().Bool(flagCosignOffline, true, "stops Cosign from communicating with any online resources (e.g., fulcio, rekor) when verifying images")
 	buildCmd.Flags().String(flagSLSAVersion, "0.2", "slsa version (1.0 or 0.2)")
+	buildCmd.Flags().Bool(flagSLSAPredicateOnly, false, "do not generate the provenance statement, only the predicate. Needed for compatability with some tools (e.g. cosign)")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagRecipe)
@@ -82,6 +84,7 @@ func build(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 	slsaVersion, _ := cmd.Flags().GetString(flagSLSAVersion)
+	slsaPredicateOnly, _ := cmd.Flags().GetBool(flagSLSAPredicateOnly)
 
 	// figure out what we need to do
 	log.Printf("running recipe: %s", arch)
@@ -157,7 +160,7 @@ func build(cmd *cobra.Command, _ []string) error {
 		if slsaVersion == "1.0" {
 			f = slsa.ExecuteV1
 		}
-		if err := f(context, &recipe, digest); err != nil {
+		if err := f(context, &recipe, digest, slsaPredicateOnly); err != nil {
 			return err
 		}
 	}

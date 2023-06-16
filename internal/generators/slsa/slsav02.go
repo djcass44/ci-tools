@@ -1,8 +1,6 @@
 package slsa
 
 import (
-	"encoding/json"
-	"fmt"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/djcass44/ci-tools/pkg/purl"
@@ -11,12 +9,11 @@ import (
 	v02 "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v0.2"
 	"log"
 	"os"
-	"path/filepath"
 	"strings"
 	"time"
 )
 
-func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error {
+func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predicateOnly bool) error {
 	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.CommitSha, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
@@ -66,59 +63,52 @@ func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) erro
 		buildType = val
 	}
 
+	predicate := v02.ProvenancePredicate{
+		BuildType: buildType,
+		Builder: common.ProvenanceBuilder{
+			ID: ctx.Builder,
+		},
+		Invocation: v02.ProvenanceInvocation{
+			ConfigSource: v02.ConfigSource{
+				URI:        repoURL,
+				Digest:     repoDigest,
+				EntryPoint: "ci",
+			},
+			Environment: map[string]string{},
+			Parameters:  env,
+		},
+		BuildConfig: map[string]any{
+			"commands": os.Args,
+			"build":    append([]string{r.Command}, r.Args...),
+			"shell":    os.Getenv("SHELL"),
+		},
+		Metadata: &v02.ProvenanceMetadata{
+			BuildInvocationID: ctx.BuildID,
+			BuildStartedOn:    &buildStart,
+			BuildFinishedOn:   &buildEnd,
+			Completeness: v02.ProvenanceComplete{
+				Parameters:  true,
+				Environment: true,
+				Materials:   true,
+			},
+			Reproducible: true,
+		},
+		Materials: materials,
+	}
+
 	provenance := in_toto.ProvenanceStatementSLSA02{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          in_toto.StatementInTotoV01,
 			PredicateType: v02.PredicateSLSAProvenance,
 			Subject:       subjects,
 		},
-		Predicate: v02.ProvenancePredicate{
-			BuildType: buildType,
-			Builder: common.ProvenanceBuilder{
-				ID: ctx.Builder,
-			},
-			Invocation: v02.ProvenanceInvocation{
-				ConfigSource: v02.ConfigSource{
-					URI:        repoURL,
-					Digest:     repoDigest,
-					EntryPoint: "ci",
-				},
-				Environment: map[string]string{},
-				Parameters:  env,
-			},
-			BuildConfig: map[string]any{
-				"commands": os.Args,
-				"build":    append([]string{r.Command}, r.Args...),
-				"shell":    os.Getenv("SHELL"),
-			},
-			Metadata: &v02.ProvenanceMetadata{
-				BuildInvocationID: ctx.BuildID,
-				BuildStartedOn:    &buildStart,
-				BuildFinishedOn:   &buildEnd,
-				Completeness: v02.ProvenanceComplete{
-					Parameters:  true,
-					Environment: true,
-					Materials:   true,
-				},
-				Reproducible: true,
-			},
-			Materials: materials,
-		},
+		Predicate: predicate,
 	}
 
-	data, err := json.MarshalIndent(&provenance, "", "\t")
-	if err != nil {
-		return err
+	var data any = provenance
+	if predicateOnly {
+		data = predicate
 	}
 
-	// write the provenance file
-	if err := os.WriteFile(filepath.Join(ctx.Root, outProvenance), data, 0644); err != nil {
-		return err
-	}
-	// write the digest file
-	if err := os.WriteFile(filepath.Join(ctx.Root, outBuild), []byte(fmt.Sprintf("%s:%s@sha256:%s", ctx.Image.Name, ctx.Repo.CommitSha, digest)), 0644); err != nil {
-		return err
-	}
-
-	return nil
+	return output(ctx, &data, digest)
 }

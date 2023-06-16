@@ -14,4 +14,4 @@ const (
 	outBuild      = "build.txt"
 )
 
-type ExecuteFunc = func(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error
+type ExecuteFunc = func(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predicateOnly bool) error

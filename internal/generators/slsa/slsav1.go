@@ -1,7 +1,6 @@
 package slsa
 
 import (
-	"encoding/json"
 	"fmt"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/djcass44/ci-tools/pkg/digestof"
@@ -17,7 +16,7 @@ import (
 	"time"
 )
 
-func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error {
+func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predicateOnly bool) error {
 	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.CommitSha, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
@@ -86,55 +85,52 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string) error
 		return err
 	}
 
+	predicate := v1.ProvenancePredicate{
+		BuildDefinition: v1.ProvenanceBuildDefinition{
+			BuildType:          buildType,
+			ExternalParameters: env,
+			InternalParameters: map[string]any{
+				"commands": os.Args,
+				"build":    append([]string{r.Command}, r.Args...),
+				"shell":    os.Getenv("SHELL"),
+			},
+			ResolvedDependencies: materials,
+		},
+		RunDetails: v1.ProvenanceRunDetails{
+			Builder: v1.Builder{
+				ID: ctx.Builder,
+			},
+			BuildMetadata: v1.BuildMetadata{
+				InvocationID: ctx.BuildID,
+				StartedOn:    &buildStart,
+				FinishedOn:   &buildEnd,
+			},
+			Byproducts: []v1.ResourceDescriptor{
+				{
+					URI:    ctx.ConfigPath,
+					Digest: common.DigestSet{digestSha256: configHash},
+				},
+				{
+					URI:    outPath,
+					Digest: common.DigestSet{digestSha256: outHash},
+				},
+			},
+		},
+	}
+
 	provenance := in_toto.ProvenanceStatementSLSA1{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          in_toto.StatementInTotoV01,
 			PredicateType: v1.PredicateSLSAProvenance,
 			Subject:       subjects,
 		},
-		Predicate: v1.ProvenancePredicate{
-			BuildDefinition: v1.ProvenanceBuildDefinition{
-				BuildType:          buildType,
-				ExternalParameters: env,
-				InternalParameters: map[string]any{
-					"commands": os.Args,
-					"build":    append([]string{r.Command}, r.Args...),
-					"shell":    os.Getenv("SHELL"),
-				},
-				ResolvedDependencies: materials,
-			},
-			RunDetails: v1.ProvenanceRunDetails{
-				Builder: v1.Builder{
-					ID: ctx.Builder,
-				},
-				BuildMetadata: v1.BuildMetadata{
-					InvocationID: ctx.BuildID,
-					StartedOn:    &buildStart,
-					FinishedOn:   &buildEnd,
-				},
-				Byproducts: []v1.ResourceDescriptor{
-					{
-						URI:    ctx.ConfigPath,
-						Digest: common.DigestSet{digestSha256: configHash},
-					},
-					{
-						URI:    outPath,
-						Digest: common.DigestSet{digestSha256: outHash},
-					},
-				},
-			},
-		},
+		Predicate: predicate,
 	}
 
-	data, err := json.MarshalIndent(&provenance, "", "\t")
-	if err != nil {
-		return err
+	var data any = provenance
+	if predicateOnly {
+		data = predicate
 	}
 
-	// write the provenance file
-	if err := os.WriteFile(filepath.Join(ctx.Root, outProvenance), data, 0644); err != nil {
-		return err
-	}
-
-	return nil
+	return output(ctx, &data, digest)
 }
