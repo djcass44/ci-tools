@@ -1,6 +1,7 @@
 package v1
 
 const (
+	EnvBuildExtraArgs     = "BUILD_EXTRA_ARGS"
 	EnvBuildArgPrefix     = "BUILD_ARG_"
 	EnvBuildTags          = "BUILD_TAGS"
 	EnvBuildDockerfile    = "BUILD_DOCKERFILE"
@@ -47,6 +48,7 @@ type BuildContext struct {
 	StartTime  string
 	Provider   string
 	ConfigPath string
+	ExtraArgs  []string
 }
 
 type BuildRepo struct {

@@ -19,6 +19,10 @@ func (c *BuildContext) Normalise() {
 	}
 
 	// handle common stuff
+	if val := os.Getenv(EnvBuildExtraArgs); strings.TrimSpace(val) != "" {
+		c.ExtraArgs = strings.Split(strings.TrimSpace(val), ",")
+	}
+
 	var buildArgs []string
 	for _, e := range os.Environ() {
 		k, v, ok := strings.Cut(e, "=")

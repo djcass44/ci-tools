@@ -1,0 +1,8 @@
+build:
+  echo:
+    command: /bin/sh
+    args:
+      - echo
+      {{- range $i, $e := .ExtraArgs }}
+      - "{{ $e }}"
+      {{- end }}

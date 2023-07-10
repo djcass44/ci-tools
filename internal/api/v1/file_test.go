@@ -3,6 +3,8 @@ package v1_test
 import (
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"os"
 	"testing"
 )
 
@@ -22,6 +24,24 @@ func TestReadConfiguration(t *testing.T) {
 	})
 	assert.NoError(t, err)
 	t.Logf("%+v", cfg)
+}
+
+func TestReadExtraArgs(t *testing.T) {
+	require.NoError(t, os.Setenv("BUILD_EXTRA_ARGS", "-e=foo,foo=zoo"))
+
+	bctx := &v1.BuildContext{
+		Repo: v1.BuildRepo{
+			CommitSha: "deadbeef",
+		},
+	}
+	bctx.Normalise()
+	recipes, err := v1.ReadConfiguration("./testdata/recipes-extra-args.tpl.yaml", bctx)
+	assert.NoError(t, err)
+	assert.Len(t, recipes.Build, 1)
+
+	r, ok := recipes.Build["echo"]
+	assert.True(t, ok)
+	assert.ElementsMatch(t, []string{"echo", "-e=foo", "foo=zoo"}, r.Args)
 }
 
 func TestReadConfigurations(t *testing.T) {

@@ -20,6 +20,9 @@ build:
       - -Djib.applicationCache={{ .Cache.Path }}
       {{- end }}
       - -Dproject.build.outputTimestamp=2023-01-01T00:00:00Z
+      {{- range $i, $e := .ExtraArgs }}
+      - "{{ $e }}"
+      {{- end }}
   com.github.djcass44.nib:
     dockercfg: true
     env:
@@ -31,6 +34,9 @@ build:
       - build
       - -t
       - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
+      {{- range $i, $e := .ExtraArgs }}
+      - "{{ $e }}"
+      {{- end }}
       - {{ .Context }}
   com.github.google.ko:
     cd: true
@@ -49,6 +55,9 @@ build:
       - --bare
       - -t
       - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
+      {{- range $i, $e := .ExtraArgs }}
+      - "{{ $e }}"
+      {{- end }}
       - .{{ if .Go.ImportPath }}/{{ .Go.ImportPath }}{{ end }}
   com.github.moby.buildkit:
     dockercfg: true
@@ -78,6 +87,9 @@ build:
       {{- range $i, $e := .Dockerfile.Args }}
       - --opt
       - build-arg:{{ $e }}
+      {{- end }}
+      {{- range $i, $e := .ExtraArgs }}
+      - "{{ $e }}"
       {{- end }}
 dockerfiles:
   python/micropipenv@v1:
