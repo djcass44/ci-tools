@@ -7,11 +7,14 @@ require (
 	github.com/anchore/packageurl-go v0.1.1-0.20230104203445-02e0a6721501
 	github.com/anchore/stereoscope v0.0.0-20230301191755-abfb374a1122
 	github.com/anchore/syft v0.74.0
+	github.com/awslabs/amazon-ecr-credential-helper/ecr-login v0.0.0-20220517224237-e6f29200ae04
+	github.com/chrismellard/docker-credential-acr-env v0.0.0-20230304212654-82a0ddb27589
 	github.com/google/go-containerregistry v0.14.1-0.20230409045903-ed5c185df419
 	github.com/in-toto/in-toto-golang v0.9.0
 	github.com/sigstore/cosign/v2 v2.0.2
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.2
+	golang.org/x/exp v0.0.0-20230202163644-54bba9f4231b
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -68,12 +71,10 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.14.8 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.18.9 // indirect
 	github.com/aws/smithy-go v1.13.5 // indirect
-	github.com/awslabs/amazon-ecr-credential-helper/ecr-login v0.0.0-20220517224237-e6f29200ae04 // indirect
 	github.com/becheran/wildmatch-go v1.0.0 // indirect
 	github.com/blang/semver v3.5.1+incompatible // indirect
 	github.com/bmatcuk/doublestar/v4 v4.6.0 // indirect
 	github.com/buildkite/agent/v3 v3.45.0 // indirect
-	github.com/chrismellard/docker-credential-acr-env v0.0.0-20220119192733-fe33c00cee21 // indirect
 	github.com/clbanning/mxj/v2 v2.5.6 // indirect
 	github.com/cloudflare/circl v1.1.0 // indirect
 	github.com/common-nighthawk/go-figure v0.0.0-20210622060536-734e95fb86be // indirect
@@ -229,7 +230,6 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
-	golang.org/x/exp v0.0.0-20230202163644-54bba9f4231b // indirect
 	golang.org/x/mod v0.10.0 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/oauth2 v0.7.0 // indirect

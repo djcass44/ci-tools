@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
-	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/sigstore/cosign/v2/cmd/cosign/cli/sign"
@@ -28,10 +28,8 @@ func prepare(ctx *civ1.BuildContext, target string) (name.Reference, []ociremote
 	// configure authentication if the target
 	// is within our registry
 	if strings.HasPrefix(target, ctx.Image.Registry) {
-		opts = append(opts, ociremote.WithRemoteOptions(remote.WithAuth(&authn.Basic{
-			Username: ctx.Image.Username,
-			Password: ctx.Image.Password,
-		})))
+		keychain := ociutil.KeyChain(ctx.Image.Registry, ctx.Image.Username, ctx.Image.Password)
+		opts = append(opts, ociremote.WithRemoteOptions(remote.WithAuthFromKeychain(keychain)))
 	}
 	ref, err = sign.GetAttachedImageRef(ref, "", opts...)
 	if err != nil {
@@ -87,13 +85,13 @@ func Verify(ctx *civ1.BuildContext, target, key string, offline bool) error {
 
 func verify(ref name.Reference, opts []ociremote.Option, key string, offline bool) error {
 	// load the key
-	verifier, err := signature.LoadPublicKey(context.TODO(), key)
+	verifier, err := signature.LoadPublicKey(context.Background(), key)
 	if err != nil {
 		return err
 	}
 	// fetch and verify the signatures
 	log.Printf("checking if image (%s) has been signed by key: '%s'", ref.String(), key)
-	signatures, _, err := cosign.VerifyImageSignatures(context.TODO(), ref, &cosign.CheckOpts{
+	signatures, _, err := cosign.VerifyImageSignatures(context.Background(), ref, &cosign.CheckOpts{
 		RegistryClientOpts: opts,
 		SigVerifier:        verifier,
 		Offline:            offline,

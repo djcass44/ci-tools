@@ -9,7 +9,7 @@ import (
 	"github.com/anchore/syft/syft/sbom"
 	"github.com/anchore/syft/syft/source"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
-	"github.com/google/go-containerregistry/pkg/authn"
+	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"log"
@@ -24,10 +24,8 @@ func Execute(ctx *civ1.BuildContext, digest string) error {
 		return err
 	}
 	log.Printf("generating SBOM for ref: %s", ref.String())
-	img, err := remote.Image(ref, remote.WithAuth(&authn.Basic{
-		Username: ctx.Image.Username,
-		Password: ctx.Image.Password,
-	}))
+	keychain := ociutil.KeyChain(ctx.Image.Registry, ctx.Image.Username, ctx.Image.Password)
+	img, err := remote.Image(ref, remote.WithAuthFromKeychain(keychain))
 	if err != nil {
 		return err
 	}
