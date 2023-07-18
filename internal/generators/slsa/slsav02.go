@@ -19,8 +19,10 @@ func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, pred
 
 	log.Printf("generating SLSA (v0.2) provenance for ref: %s", repoURL)
 
-	baseDigest := ociutil.GetDigest(ctx.Image.Base)
-	parentDigest := ociutil.GetDigest(ctx.Image.Parent)
+	auth := ctx.Auth()
+
+	baseDigest := ociutil.GetDigest(ctx.Image.Base, auth)
+	parentDigest := ociutil.GetDigest(ctx.Image.Parent, auth)
 
 	materials := []common.ProvenanceMaterial{
 		{

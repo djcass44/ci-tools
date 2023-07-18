@@ -28,7 +28,7 @@ func prepare(ctx *civ1.BuildContext, target string) (name.Reference, []ociremote
 	// configure authentication if the target
 	// is within our registry
 	if strings.HasPrefix(target, ctx.Image.Registry) {
-		keychain := ociutil.KeyChain(ctx.Image.Registry, ctx.Image.Username, ctx.Image.Password)
+		keychain := ociutil.KeyChain(ctx.Auth())
 		opts = append(opts, ociremote.WithRemoteOptions(remote.WithAuthFromKeychain(keychain)))
 	}
 	ref, err = sign.GetAttachedImageRef(ref, "", opts...)

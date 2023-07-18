@@ -2,7 +2,6 @@ package ociutil
 
 import (
 	"fmt"
-	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/google/go-containerregistry/pkg/name"
 	"log"
@@ -14,10 +13,10 @@ import (
 //
 // If the digest cannot be found, an
 // empty string is returned.
-func GetDigest(target string) string {
-	sha, err := crane.Digest(target, crane.WithAuthFromKeychain(authn.DefaultKeychain))
+func GetDigest(target string, auth Auth) string {
+	sha, err := crane.Digest(target, crane.WithAuthFromKeychain(KeyChain(auth)))
 	if err != nil {
-		log.Printf("unable to generate digest for: %s", target)
+		log.Printf("unable to generate digest for: %s (%s)", target, err)
 		return ""
 	}
 	return strings.TrimPrefix(sha, "sha256:")
@@ -25,7 +24,7 @@ func GetDigest(target string) string {
 
 // SnapshotImage mangles a given OCI string so that
 // there is a digest present.
-func SnapshotImage(target string) (string, error) {
+func SnapshotImage(target string, auth Auth) (string, error) {
 	ref, err := name.ParseReference(target)
 	if err != nil {
 		return "", err
@@ -41,6 +40,6 @@ func SnapshotImage(target string) (string, error) {
 	}
 	// otherwise grab the digest for the tag and
 	// splice it in
-	digest := GetDigest(ref.String())
+	digest := GetDigest(ref.String(), auth)
 	return fmt.Sprintf("%s@sha256:%s", ref.String(), digest), nil
 }

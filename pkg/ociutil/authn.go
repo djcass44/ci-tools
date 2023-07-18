@@ -11,38 +11,40 @@ import (
 // BasicKeychain is an authn.Keychain implementation that
 // uses basic auth to talk to a registry.
 type BasicKeychain struct {
-	registry string
-	username string
-	password string
+	auth Auth
 }
 
-func NewBasicKeychain(registry, username, password string) *BasicKeychain {
+type Auth struct {
+	Registry string
+	Username string
+	Password string
+}
+
+func NewBasicKeychain(auth Auth) *BasicKeychain {
 	return &BasicKeychain{
-		registry: registry,
-		username: username,
-		password: password,
+		auth: auth,
 	}
 }
 
 func (b *BasicKeychain) Resolve(resource authn.Resource) (authn.Authenticator, error) {
-	if resource.RegistryStr() != b.registry {
+	if resource.RegistryStr() != b.auth.Registry {
 		return authn.Anonymous, nil
 	}
 	return &authn.Basic{
-		Username: b.username,
-		Password: b.password,
+		Username: b.auth.Username,
+		Password: b.auth.Password,
 	}, nil
 }
 
-func KeyChain(registry, username, password string) authn.Keychain {
+func KeyChain(auth Auth) authn.Keychain {
 	keychains := []authn.Keychain{
 		authn.DefaultKeychain,
 		google.Keychain,
 		authn.NewKeychainFromHelper(ecr.NewECRHelper(ecr.WithClientFactory(api.DefaultClientFactory{}))),
 		authn.NewKeychainFromHelper(credhelper.NewACRCredentialsHelper()),
 	}
-	if username != "" && password != "" {
-		keychains = append([]authn.Keychain{NewBasicKeychain(registry, username, password)}, keychains...)
+	if auth.Username != "" && auth.Password != "" {
+		keychains = append([]authn.Keychain{NewBasicKeychain(auth)}, keychains...)
 	}
 	return authn.NewMultiKeychain(keychains...)
 }

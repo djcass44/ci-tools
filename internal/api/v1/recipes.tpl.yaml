@@ -3,13 +3,13 @@ build:
     dockercfg: true
     cd: true
     env:
-      BUILD_IMAGE_PASSWORD: {{ .Image.Password }}
+      BUILD_IMAGE_PASSWORD: "{{ .Image.Password }}"
     command: mvn
     args:
       - compile
       - com.google.cloud.tools:jib-maven-plugin:3.3.2:build
-      - -Djib.from.image={{ .Image.Parent }}
-      - -Djib.to.image={{ .Image.Name }}
+      - -Djib.from.image="{{ .Image.Parent }}"
+      - -Djib.to.image="{{ .Image.Name }}"
       - -Djib.to.auth.username={{ .Image.Username }}
       - -Djib.to.auth.password=$BUILD_IMAGE_PASSWORD
       - -Djib.to.tags={{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
@@ -26,8 +26,8 @@ build:
   com.github.djcass44.nib:
     dockercfg: true
     env:
-      NIB_DEFAULT_BASE_IMAGE: {{ .Image.Parent }}
-      NIB_DOCKER_REPO: {{ .Image.Name }}
+      NIB_DEFAULT_BASE_IMAGE: "{{ .Image.Parent }}"
+      NIB_DOCKER_REPO: "{{ .Image.Name }}"
       NIB_CACHE: {{ .Cache.Path }}
     command: nib
     args:
@@ -42,8 +42,8 @@ build:
     cd: true
     dockercfg: true
     env:
-      KO_DEFAULTBASEIMAGE: {{ .Image.Parent }}
-      KO_DOCKER_REPO: {{ .Image.Name }}
+      KO_DEFAULTBASEIMAGE: "{{ .Image.Parent }}"
+      KO_DOCKER_REPO: "{{ .Image.Name }}"
       {{- if .Cache.Enabled }}
       KOCACHE: {{ .Cache.Path }}
       {{- end }}

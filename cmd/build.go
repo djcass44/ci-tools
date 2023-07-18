@@ -94,10 +94,11 @@ func build(cmd *cobra.Command, _ []string) error {
 		return err
 	}
 	context.Builder = arch
+	auth := context.Auth()
 	// rewrite the parent image reference to
 	// use a digest
 	if context.Image.Parent != "" {
-		digest, err := ociutil.SnapshotImage(context.Image.Parent)
+		digest, err := ociutil.SnapshotImage(context.Image.Parent, auth)
 		if err != nil {
 			return err
 		}
@@ -148,7 +149,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// generate the SBOM
-	digest := ociutil.GetDigest(fmt.Sprintf("%s:%s", context.Image.Name, context.Repo.CommitSha))
+	digest := ociutil.GetDigest(fmt.Sprintf("%s:%s", context.Image.Name, context.Repo.CommitSha), auth)
 	if !skipSBOM {
 		if err := sbom.Execute(context, digest); err != nil {
 			return err
