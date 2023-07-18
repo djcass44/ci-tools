@@ -8,8 +8,8 @@ build:
     args:
       - compile
       - com.google.cloud.tools:jib-maven-plugin:3.3.2:build
-      - -Djib.from.image="{{ .Image.Parent }}"
-      - -Djib.to.image="{{ .Image.Name }}"
+      - -Djib.from.image={{ .Image.Parent }}
+      - -Djib.to.image={{ .Image.Name }}
       - -Djib.to.auth.username={{ .Image.Username }}
       - -Djib.to.auth.password=$BUILD_IMAGE_PASSWORD
       - -Djib.to.tags={{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
