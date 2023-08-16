@@ -22,6 +22,18 @@ func TestVerify(t *testing.T) {
 }
 
 func TestVerifyAny(t *testing.T) {
-	err := VerifyAny(&civ1.BuildContext{}, "gcr.io/kaniko-project/executor:debug", "./testdata", true)
-	assert.NoError(t, err)
+	t.Run("directory of certificates works", func(t *testing.T) {
+		err := VerifyAny(&civ1.BuildContext{}, "gcr.io/kaniko-project/executor:debug", "./testdata", true)
+		assert.NoError(t, err)
+	})
+	t.Run("non-existent directory does not panic", func(t *testing.T) {
+		assert.NotPanics(t, func() {
+			err := VerifyAny(&civ1.BuildContext{}, "gcr.io/kaniko-project/executor:debug", "./NOT_A_REAL_DIRECTORY", true)
+			assert.Error(t, err)
+		})
+	})
+	t.Run("empty directory fails verification", func(t *testing.T) {
+		err := VerifyAny(&civ1.BuildContext{}, "gcr.io/kaniko-project/executor:debug", t.TempDir(), true)
+		assert.Error(t, err)
+	})
 }

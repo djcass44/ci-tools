@@ -47,6 +47,10 @@ func VerifyAny(ctx *civ1.BuildContext, target, dir string, offline bool) error {
 		return err
 	}
 	err = filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			log.Printf("encountered error walking path: %s (%s)", path, err)
+			return filepath.SkipDir
+		}
 		if d.IsDir() {
 			return nil
 		}
@@ -70,7 +74,7 @@ func VerifyAny(ctx *civ1.BuildContext, target, dir string, offline bool) error {
 		}
 		return err
 	}
-	return nil
+	return errors.New("no signatures could be verified")
 }
 
 // Verify validates that a given image has been signed by a given Cosign
