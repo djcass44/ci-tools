@@ -14,7 +14,7 @@ build binary:
   stage: build
   needs: []
   dependencies: []
-  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.20-rolling
+  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.21-rolling
   variables:
     GOFLAGS: "-buildvcs=false"
     GOPATH: $CI_PROJECT_DIR/.go
@@ -32,7 +32,7 @@ build binary:
 
 integrate ko:
   stage: integrate
-  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.20-rolling
+  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.21-rolling
   dependencies:
     - build binary
   needs:

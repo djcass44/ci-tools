@@ -8,5 +8,5 @@ var Command = &cobra.Command{
 }
 
 func init() {
-	Command.AddCommand(sarif2GitLabCmd)
+	Command.AddCommand(sarif2GitLabCmd, mvnAuthCmd)
 }
