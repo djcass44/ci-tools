@@ -16,7 +16,8 @@ func init() {
 	command.AddCommand(buildCmd, dockerfileCmd, verifyCmd, tools.Command)
 }
 
-func Execute() {
+func Execute(version string) {
+	command.Version = version
 	if err := command.Execute(); err != nil {
 		os.Exit(1)
 	}
