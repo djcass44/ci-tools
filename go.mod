@@ -16,6 +16,7 @@ require (
 	github.com/spf13/cobra v1.7.0
 	github.com/stretchr/testify v1.8.4
 	gitlab.com/av1o/gitlab-cq v0.0.0-20230819233234-8172eecb6c1e
+	gitlab.com/av1o/mvn-settings-gen v0.0.0-20230820041730-701f441e999a
 	golang.org/x/exp v0.0.0-20230202163644-54bba9f4231b
 	gopkg.in/yaml.v3 v3.0.1
 )
@@ -226,7 +227,6 @@ require (
 	github.com/zclconf/go-cty v1.13.2 // indirect
 	github.com/zeebo/errs v1.3.0 // indirect
 	gitlab.com/autokubeops/cuttle v0.0.0-20211130062832-7b5cb649a7ca // indirect
-	gitlab.com/av1o/mvn-settings-gen v0.0.0-20230820041730-701f441e999a // indirect
 	go.mongodb.org/mongo-driver v1.11.3 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel v1.14.0 // indirect

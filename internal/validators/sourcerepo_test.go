@@ -45,7 +45,7 @@ func TestSourceRepoValidator_Validate(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.in, func(t *testing.T) {
 			v := SourceRepoValidator{Expected: tt.repo}
-			ok := v.Validate(loadFile(t, tt.in))
+			ok := v.Check1(loadFile(t, tt.in))
 			assert.EqualValues(t, tt.out, ok)
 		})
 	}

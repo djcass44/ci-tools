@@ -13,15 +13,34 @@ type SourceRepoValidator struct {
 	Expected string
 }
 
-func (v *SourceRepoValidator) Validate(statement *in_toto.ProvenanceStatementSLSA1) bool {
-	purl := v.Expected
-	// if the expected URL is not a package-url,
-	// then we need to convert it into one
-	if !strings.HasPrefix(purl, "pkg:") {
-		domain, version, _ := strings.Cut(purl, "@")
+func (v *SourceRepoValidator) Check1(statement *in_toto.ProvenanceStatementSLSA1) bool {
+	purl := v.packageUrl(v.Expected)
+	if purl == "" {
+		return false
+	}
+	extParams := (statement.Predicate.BuildDefinition.ExternalParameters).(map[string]any)
+	val, _, _ := strings.Cut(extParams["source"].(string), "@")
+	log.Printf("%s == %s", purl, val)
+	return val == purl
+}
+
+func (v *SourceRepoValidator) Check02(statement *in_toto.ProvenanceStatementSLSA02) bool {
+	purl := v.packageUrl(v.Expected)
+	if purl == "" {
+		return false
+	}
+	extParams := (statement.Predicate.Invocation.Parameters).(map[string]any)
+	val, _, _ := strings.Cut(extParams["source"].(string), "@")
+	log.Printf("%s == %s", purl, val)
+	return val == purl
+}
+
+func (*SourceRepoValidator) packageUrl(s string) string {
+	if !strings.HasPrefix(s, "pkg:") {
+		domain, version, _ := strings.Cut(s, "@")
 		uri, err := url.Parse(domain)
 		if err != nil {
-			return false
+			return ""
 		}
 		// extract the repo name without the .git extension
 		name := filepath.Base(strings.TrimSuffix(uri.Path, ".git"))
@@ -29,9 +48,7 @@ func (v *SourceRepoValidator) Validate(statement *in_toto.ProvenanceStatementSLS
 		namespace := url.PathEscape(strings.TrimPrefix(filepath.Dir(uri.Path), "/"))
 		// generate the package-url
 		p := packageurl.NewPackageURL(strings.TrimSuffix(uri.Host, filepath.Ext(uri.Host)), namespace, name, version, nil, "")
-		purl = p.ToString()
-		log.Printf("purl: %s", purl)
+		return p.ToString()
 	}
-	extParams := (statement.Predicate.BuildDefinition.ExternalParameters).(map[string]any)
-	return extParams["source"] == purl
+	return s
 }

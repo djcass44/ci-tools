@@ -10,13 +10,20 @@ import (
 	"time"
 )
 
-func VSA(provenance *in_toto.ProvenanceStatementSLSA1) error {
+func VSA[T in_toto.ProvenanceStatementSLSA1 | in_toto.ProvenanceStatementSLSA02](provenance *T) error {
+	// extract the subject
+	var subject []in_toto.Subject
+	switch v := any(provenance).(type) {
+	case in_toto.ProvenanceStatementSLSA1:
+		subject = v.Subject[:1]
+	case in_toto.ProvenanceStatementSLSA02:
+		subject = v.Subject[:1]
+	}
 	statement := in_toto.Statement{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          in_toto.StatementInTotoV01,
 			PredicateType: vsa.PredicateVSA,
-			// todo limit to single subject
-			Subject: provenance.Subject,
+			Subject:       subject,
 		},
 		Predicate: vsa.Predicate{
 			Verifier: vsa.Verifier{
@@ -24,7 +31,7 @@ func VSA(provenance *in_toto.ProvenanceStatementSLSA1) error {
 			},
 			TimeVerified: time.Now(),
 			// subject[0].uri
-			ResourceURI: "",
+			ResourceURI: subject[0].Name,
 			// need to make something up here
 			Policy: common.ProvenanceMaterial{
 				URI:    "",

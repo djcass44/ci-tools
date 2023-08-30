@@ -6,6 +6,10 @@ type BuildTypeValidator struct {
 	Expected string
 }
 
-func (v *BuildTypeValidator) Validate(statement *in_toto.ProvenanceStatementSLSA1) bool {
+func (v *BuildTypeValidator) Check1(statement *in_toto.ProvenanceStatementSLSA1) bool {
 	return statement.Predicate.BuildDefinition.BuildType == v.Expected
+}
+
+func (v *BuildTypeValidator) Check02(statement *in_toto.ProvenanceStatementSLSA02) bool {
+	return statement.Predicate.BuildType == v.Expected
 }

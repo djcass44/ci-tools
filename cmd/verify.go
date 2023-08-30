@@ -28,6 +28,8 @@ func init() {
 	verifyCmd.Flags().String(flagExpectedBuildType, slsa.DefaultBuildType, "expected value for 'buildType'")
 	verifyCmd.Flags().String(flagExpectedSourceRepository, "", "expected url (package-url or http) for the source repository")
 
+	verifyCmd.Flags().String(flagSLSAVersion, slsaVersion02, "slsa version (1.0 or 0.2)")
+
 	_ = verifyCmd.MarkFlagRequired(flagExpectedSourceRepository)
 }
 
@@ -38,24 +40,41 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 	expectedBuildType, _ := cmd.Flags().GetString(flagExpectedBuildType)
 	expectedSourceRepo, _ := cmd.Flags().GetString(flagExpectedSourceRepository)
 
+	slsaVersion, _ := cmd.Flags().GetString(flagSLSAVersion)
+
 	// read the statement
-	statement, err := loadFile(filename)
+	var statement1 *in_toto.ProvenanceStatementSLSA1
+	var statement02 *in_toto.ProvenanceStatementSLSA02
+	var err error
+
+	if slsaVersion == slsaVersion10 {
+		statement1, err = loadFile[in_toto.ProvenanceStatementSLSA1](filename)
+	} else {
+		statement02, err = loadFile[in_toto.ProvenanceStatementSLSA02](filename)
+	}
 	if err != nil {
 		return err
 	}
 
-	buildTypeValidator := validators.BuildTypeValidator{Expected: expectedBuildType}
-	sourceRepoValidator := validators.SourceRepoValidator{Expected: expectedSourceRepo}
+	buildTypeValidator := &validators.BuildTypeValidator{Expected: expectedBuildType}
+	sourceRepoValidator := &validators.SourceRepoValidator{Expected: expectedSourceRepo}
+	internalParameterValidator := &validators.InternalParameterValidator{}
+	predicateTypeValidator := &validators.PredicateTypeValidator{}
 
-	assertions := map[string]validators.ValidateFunc{
-		"Build type":                  buildTypeValidator.Validate,
-		"Internal parameters":         validators.InternalParameterValidator,
-		"Predicate type":              validators.PredicateTypeValidator,
-		"Canonical source repository": sourceRepoValidator.Validate,
+	assertions := map[string]validators.Validator{
+		"Build type":                  buildTypeValidator,
+		"Internal parameters":         internalParameterValidator,
+		"Predicate type":              predicateTypeValidator,
+		"Canonical source repository": sourceRepoValidator,
 	}
 
+	var ok bool
 	for k, v := range assertions {
-		ok := v(statement)
+		if slsaVersion == slsaVersion10 {
+			ok = v.Check1(statement1)
+		} else {
+			ok = v.Check02(statement02)
+		}
 		if !ok {
 			log.Printf("%s... FAILED", k)
 			return errors.New("statement validation failed")
@@ -63,7 +82,12 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 		log.Printf("%s... SUCCESS", k)
 	}
 
-	if err := slsa.VSA(statement); err != nil {
+	if slsaVersion == slsaVersion10 {
+		err = slsa.VSA(statement1)
+	} else {
+		err = slsa.VSA(statement02)
+	}
+	if err != nil {
 		log.Printf("failed to generate VSA")
 		return err
 	}
@@ -71,12 +95,12 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func loadFile(path string) (*in_toto.ProvenanceStatementSLSA1, error) {
+func loadFile[T in_toto.ProvenanceStatementSLSA1 | in_toto.ProvenanceStatementSLSA02](path string) (*T, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
-	var statement in_toto.ProvenanceStatementSLSA1
+	var statement T
 	if err := json.NewDecoder(f).Decode(&statement); err != nil {
 		return nil, err
 	}
