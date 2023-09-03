@@ -5,19 +5,28 @@ import (
 	"github.com/djcass44/ci-tools/pkg/in_toto/vsa"
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
-	"os"
-	"path/filepath"
 	"time"
 )
 
-func VSA[T in_toto.ProvenanceStatementSLSA1 | in_toto.ProvenanceStatementSLSA02](provenance *T) error {
-	// extract the subject
+func VSA[T in_toto.ProvenanceStatementSLSA1 | in_toto.ProvenanceStatementSLSA02](ok bool, provenance *T, provenanceMeta common.ProvenanceMaterial) (string, error) {
+	verifiedLabel := vsa.BuildLevel3
+	result := vsa.ResultSuccess
+	if !ok {
+		result = string(vsa.BuildFailed)
+		verifiedLabel = vsa.BuildFailed
+	}
+
+	// extract information from the provenance
+	// statement
 	var subject []in_toto.Subject
+	var slsaVersion string
 	switch v := any(provenance).(type) {
-	case in_toto.ProvenanceStatementSLSA1:
+	case *in_toto.ProvenanceStatementSLSA1:
 		subject = v.Subject[:1]
-	case in_toto.ProvenanceStatementSLSA02:
+		slsaVersion = vsa.SlsaVersion1
+	case *in_toto.ProvenanceStatementSLSA02:
 		subject = v.Subject[:1]
+		slsaVersion = vsa.SlsaVersion02
 	}
 	statement := in_toto.Statement{
 		StatementHeader: in_toto.StatementHeader{
@@ -38,24 +47,21 @@ func VSA[T in_toto.ProvenanceStatementSLSA1 | in_toto.ProvenanceStatementSLSA02]
 				Digest: common.DigestSet{},
 			},
 			// digest of provenance data
-			InputAttestations: nil,
+			InputAttestations: []common.ProvenanceMaterial{provenanceMeta},
 			// PASSED | FAILED
-			VerificationResult: "PASSED",
-			VerifiedLabels: []string{
-				"SLSA_LEVEL_3",
+			VerificationResult: result,
+			VerifiedLabels: []vsa.SlsaResult{
+				verifiedLabel,
 			},
-			SlsaVersion: vsa.SlsaVersion1,
+			DependencyLevels: map[string]int{},
+			SlsaVersion:      slsaVersion,
 		},
 	}
 
 	data, err := json.MarshalIndent(&statement, "", "\t")
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	// write the file
-	if err := os.WriteFile(filepath.Join(os.TempDir(), outVSA), data, 0644); err != nil {
-		return err
-	}
-	return nil
+	return string(data), nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/djcass44/ci-tools/internal/generators/sbom"
 	"github.com/djcass44/ci-tools/internal/generators/sign"
 	"github.com/djcass44/ci-tools/internal/generators/slsa"
+	"github.com/djcass44/ci-tools/pkg/in_toto/vsa"
 	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/spf13/cobra"
 	"log"
@@ -39,11 +40,6 @@ const (
 	flagSLSAPredicateOnly  = "slsa-predicate-only"
 )
 
-const (
-	slsaVersion02 = "0.2"
-	slsaVersion10 = "1.0"
-)
-
 func init() {
 	buildCmd.Flags().StringP(flagRecipe, "a", "", "application recipe to use")
 	buildCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
@@ -57,7 +53,7 @@ func init() {
 	buildCmd.Flags().String(flagCosignPublicKey, "", "path to the Cosign public key used for verifying parent images")
 	buildCmd.Flags().String(flagCosignPublicKeyDir, "", "path to the directory containing Cosign public keys used for verifying parent images")
 	buildCmd.Flags().Bool(flagCosignOffline, true, "stops Cosign from communicating with any online resources (e.g., fulcio, rekor) when verifying images")
-	buildCmd.Flags().String(flagSLSAVersion, slsaVersion02, "slsa version (1.0 or 0.2)")
+	buildCmd.Flags().String(flagSLSAVersion, vsa.SlsaVersion02, "slsa version (1.0 or 0.2)")
 	buildCmd.Flags().Bool(flagSLSAPredicateOnly, false, "do not generate the provenance statement, only the predicate. Needed for compatability with some tools (e.g. cosign)")
 
 	// flag options
@@ -163,7 +159,7 @@ func build(cmd *cobra.Command, _ []string) error {
 
 	if !skipSLSA {
 		f := slsa.ExecuteV02
-		if slsaVersion == slsaVersion10 {
+		if slsaVersion == vsa.SlsaVersion1 {
 			f = slsa.ExecuteV1
 		}
 		if err := f(context, &recipe, digest, slsaPredicateOnly); err != nil {

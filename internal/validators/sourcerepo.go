@@ -18,6 +18,7 @@ func (v *SourceRepoValidator) Check1(statement *in_toto.ProvenanceStatementSLSA1
 	if purl == "" {
 		return false
 	}
+	// todo fix panics here
 	extParams := (statement.Predicate.BuildDefinition.ExternalParameters).(map[string]any)
 	val, _, _ := strings.Cut(extParams["source"].(string), "@")
 	log.Printf("%s == %s", purl, val)

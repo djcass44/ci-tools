@@ -39,5 +39,10 @@ func Parse(purlType, target, digest, digestType, path string) string {
 		qualifiers[QualifierTag] = tag
 	}
 
+	// remove the path if it's '.'
+	if strings.TrimSpace(path) == "." {
+		path = ""
+	}
+
 	return packageurl.NewPackageURL(purlType, namespace, name, fmt.Sprintf("%s:%s", digestType, digest), packageurl.QualifiersFromMap(qualifiers), path).String()
 }

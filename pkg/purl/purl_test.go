@@ -43,6 +43,20 @@ func TestParse(t *testing.T) {
 			"pkg:gitlab/gitlab-org/gitlab.git@sha256:deadbeef?repository_url=gitlab.com#lib",
 		},
 		{
+			TypeGitLab,
+			"https://gitlab.com/gitlab-org/gitlab.git",
+			"deadbeef",
+			".",
+			"pkg:gitlab/gitlab-org/gitlab.git@sha256:deadbeef?repository_url=gitlab.com",
+		},
+		{
+			TypeGitLab,
+			"https://gitlab.com/gitlab-org/gitlab.git",
+			"deadbeef",
+			"project",
+			"pkg:gitlab/gitlab-org/gitlab.git@sha256:deadbeef?repository_url=gitlab.com#project",
+		},
+		{
 			packageurl.TypeGeneric,
 			"data.json",
 			"deadbeef",
