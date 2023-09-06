@@ -1,6 +1,7 @@
 package ociutil
 
 import (
+	"errors"
 	"fmt"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/google/go-containerregistry/pkg/name"
@@ -41,5 +42,8 @@ func SnapshotImage(target string, auth Auth) (string, error) {
 	// otherwise grab the digest for the tag and
 	// splice it in
 	digest := GetDigest(ref.String(), auth)
+	if digest == "" {
+		return "", errors.New("could not generate digest")
+	}
 	return fmt.Sprintf("%s@sha256:%s", ref.String(), digest), nil
 }

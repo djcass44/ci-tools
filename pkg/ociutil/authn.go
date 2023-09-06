@@ -6,6 +6,7 @@ import (
 	"github.com/chrismellard/docker-credential-acr-env/pkg/credhelper"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/v1/google"
+	"log"
 )
 
 // BasicKeychain is an authn.Keychain implementation that
@@ -28,6 +29,7 @@ func NewBasicKeychain(auth Auth) *BasicKeychain {
 
 func (b *BasicKeychain) Resolve(resource authn.Resource) (authn.Authenticator, error) {
 	if resource.RegistryStr() != b.auth.Registry {
+		log.Printf("registry does not match (expected: '%s', actual: '%s')", b.auth.Registry, resource.RegistryStr())
 		return authn.Anonymous, nil
 	}
 	return &authn.Basic{

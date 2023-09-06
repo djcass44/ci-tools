@@ -24,4 +24,9 @@ func TestSnapshotImage(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Contains(t, out, "sha256:")
 	})
+	t.Run("private image is not resolved", func(t *testing.T) {
+		out, err := SnapshotImage("harbor.dcas.dev/not-found/not-found:v1.2.3", Auth{})
+		assert.Error(t, err)
+		assert.Empty(t, out)
+	})
 }

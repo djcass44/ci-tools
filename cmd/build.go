@@ -101,6 +101,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	if context.Image.Parent != "" {
 		digest, err := ociutil.SnapshotImage(context.Image.Parent, auth)
 		if err != nil {
+			log.Print("unable to verify parent image")
 			return err
 		}
 		context.Image.Parent = digest
