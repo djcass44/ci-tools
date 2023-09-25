@@ -38,6 +38,21 @@ build:
       - "{{ $e }}"
       {{- end }}
       - {{ .Context }}
+  com.github.djcass44.all-your-base:
+    cd: true
+    dockercfg: true
+    command: ayb
+    args:
+      - build
+      - --config=build.yaml
+      - --cache-dir={{ .Cache.Path }}
+      - --image={{ .Image.Name }}
+      {{- range $i, $e := .Tags }}
+      - --tag={{ $e }}
+      {{- end }}
+      {{- range $i, $e := .ExtraTags }}
+      - --tag={{ $e }}
+      {{- end }}
   com.github.google.ko:
     cd: true
     dockercfg: true
