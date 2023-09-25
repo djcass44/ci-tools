@@ -79,4 +79,21 @@ func TestReadConfigurations(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Greater(t, len(recipes.Build), 1)
 	})
+	t.Run("templating works as expected", func(t *testing.T) {
+		recipes, err := v1.ReadConfigurations(&v1.BuildContext{
+			Root:    "/foo/bar",
+			Context: "samples/python",
+			Image: v1.ImageConfig{
+				Name: "localhost:5000/myrepo",
+			},
+			Tags:       nil,
+			FQTags:     nil,
+			Dockerfile: v1.DockerfileConfig{},
+			Cache: v1.BuildCache{
+				Enabled: true,
+			},
+		}, " testdata/recipes-ayb.tpl.yaml", "")
+		assert.NoError(t, err)
+		assert.Greater(t, len(recipes.Build), 1)
+	})
 }

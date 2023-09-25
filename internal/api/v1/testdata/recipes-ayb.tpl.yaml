@@ -1,0 +1,15 @@
+build:
+  com.github.djcass44.all-your-base:
+    cd: true
+    dockercfg: true
+    command: ayb
+    args:
+      - build
+      - --config=build.yaml
+      - --cache-dir={{ .Cache.Path }}
+      - --image={{ .Image.Name }}
+      {{- range $i, $e := .Tags }}
+      - --tag={{ $e }}
+      {{- end }}
+  test:
+    command: echo
