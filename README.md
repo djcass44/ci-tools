@@ -15,15 +15,23 @@ The build phase supports a number of tools.
 Tools are configured using "recipes", which are detailed in the [`recipes.tpl.yaml`](internal/api/v1/recipes.tpl.yaml) file.
 
 The default recipe list contains:
-* [Ko](https://github.com/ko-build/ko) (`com.github.google.ko`)
-* [Jib](https://github.com/GoogleContainerTools/jib) (`com.google.cloud.tools.jib-maven-plugin`)
-* [BuildKit](https://github.com/moby/buildkit) (`com.github.moby.buildkit`)
+* [Ko](https://github.com/ko-build/ko) (`com.github.google.ko`) for Go
+* [Jib](https://github.com/GoogleContainerTools/jib) (`com.google.cloud.tools.jib-maven-plugin`) for Java
+* [BuildKit](https://github.com/moby/buildkit) (`com.github.moby.buildkit`) for Dockerfile
+* [Nib](https://github.com/djcass44/nib) (`com.github.djcass44.nib`) for Static web applications
+* [`all-your-base`](https://github.com/djcass44/all-your-base) (`com.github.djcass44.all-your-base`) for base images
 
 ### Usage:
 
 ```shell
 ci build --recipe <recipe-name>
 ```
+
+While `ci` can be run manually, it expects to be run in a CI system and pulls information from the ambient environment variables provided by the CI system.
+
+It currently supports:
+
+* GitLab CI
 
 ### Configuration
 
@@ -48,3 +56,8 @@ All execution of the build phase generate the following provenance:
 * `build.txt` - text file containing the full path of the built image
 
 These files are output to the build root and should be attested using Cosign.
+
+#### SLSA
+
+Provenance is captured in the [SLSA](https://slsa.dev/) format.
+It supports the `0.2` and `1.0` formats. The `1.0` format is recommended but doesn't support as many tools (e.g. Cosign only supports `0.2` as of 2023).
