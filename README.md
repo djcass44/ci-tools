@@ -14,12 +14,7 @@ Installation instructions can be found in the releases page.
 The build phase supports a number of tools.
 Tools are configured using "recipes", which are detailed in the [`recipes.tpl.yaml`](internal/api/v1/recipes.tpl.yaml) file.
 
-The default recipe list contains:
-* [Ko](https://github.com/ko-build/ko) (`com.github.google.ko`) for Go
-* [Jib](https://github.com/GoogleContainerTools/jib) (`com.google.cloud.tools.jib-maven-plugin`) for Java
-* [BuildKit](https://github.com/moby/buildkit) (`com.github.moby.buildkit`) for Dockerfile
-* [Nib](https://github.com/djcass44/nib) (`com.github.djcass44.nib`) for Static web applications
-* [`all-your-base`](https://github.com/djcass44/all-your-base) (`com.github.djcass44.all-your-base`) for base images
+Information about recipes can be found in [RECIPES.md](./docs/RECIPES.md).
 
 ### Usage:
 
@@ -42,6 +37,10 @@ Add `--help` to any command to view the full set of options.
 #### Environment variables:
 
 Information about environment variables can be found in [ENVIRONMENT.md](./docs/ENVIRONMENT.md).
+
+### Signing
+
+Information about signing can be found in [COSIGN.md](./docs/COSIGN.md).
 
 ### Provenance
 

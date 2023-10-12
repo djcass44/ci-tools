@@ -36,3 +36,17 @@ Additionally, `ci` also saves the `subject` value to a `build.txt` file in the w
 This file is useful for avoiding the round-trip to the container registry to get the digest of the container that was just built.
 
 An example usage is to pass the image digest directly to Cosign.
+
+## Generating provenance
+
+`ci` generates Provenance automatically, however there are a few things you need to do in order to capture it.
+
+```shell
+ci build --recipe com.github.google.ko --slsa-version=0.2 --slsa-predicate-only
+cosign attest --key "$COSIGN_PRIVATE_KEY" --type slsaprovenance --predicate provenance.slsa.json "$(cat build.txt)"
+```
+
+When attesting the provenance, you need to generate version `0.2` and disable `in-toto` wrapping.
+This is needed because Cosign only supports `0.2` and will automatically wrap the provenance in an `in-toto` envelope.
+
+If `slsa-predicate-only` is not set, the provenance will be wrapped twice which can make it hard to introspect.
