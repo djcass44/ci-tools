@@ -40,13 +40,8 @@ It currently supports:
 Add `--help` to any command to view the full set of options.
 
 #### Environment variables:
-* `BUILD_IMAGE_PARENT` - the container image to use for the application runtime
-* `BUILD_DOCKERFILE` - (*optional*) name of the `Dockerfile` within the build context
-* `BUILD_ARG_*` - (*optional*) arbitrary key-value pairs to be passed to Dockerfile-based recipes
-* `BUILD_CACHE_ENABLED` - (*optional*) enable or disable caching (default: `true`). Cache logic depends on the recipe
-* `BUILD_CACHE_PATH` - (*optional*) the path that cache files will be stored (default `<project-root>/.cache`)
-* `BUILD_GO_IMPORTPATH` - (*optional*) the import path used by Go projects. Useful when the `main.go` file is in a subdirectory
-* `PROJECT_PATH` - (*optional*) path to the project within the build context (useful for mono-repos)
+
+Information about environment variables can be found in [ENVIRONMENT.md](./docs/ENVIRONMENT.md).
 
 ### Provenance
 
@@ -57,7 +52,4 @@ All execution of the build phase generate the following provenance:
 
 These files are output to the build root and should be attested using Cosign.
 
-#### SLSA
-
-Provenance is captured in the [SLSA](https://slsa.dev/) format.
-It supports the `0.2` and `1.0` formats. The `1.0` format is recommended but doesn't support as many tools (e.g. Cosign only supports `0.2` as of 2023).
+Information about the build provenance can be found in [PROVENANCE.md](./docs/PROVENANCE.md).

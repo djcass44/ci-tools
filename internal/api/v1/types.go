@@ -1,16 +1,30 @@
 package v1
 
 const (
-	EnvBuildExtraArgs     = "BUILD_EXTRA_ARGS"
-	EnvBuildArgPrefix     = "BUILD_ARG_"
-	EnvBuildTags          = "BUILD_TAGS"
-	EnvBuildDockerfile    = "BUILD_DOCKERFILE"
-	EnvBuildGoImportPath  = "BUILD_GO_IMPORTPATH"
-	EnvBuildImageParent   = "BUILD_IMAGE_PARENT"
+	EnvBuildExtraArgs = "BUILD_EXTRA_ARGS"
+	EnvBuildArgPrefix = "BUILD_ARG_"
+	// EnvBuildTags is a comma-separated list of
+	// tags that should be added to the image. Tags
+	// are only added on the trunk.
+	EnvBuildTags = "BUILD_TAGS"
+	// EnvBuildDockerfile dictates where Dockerfile-based recipes
+	// should look for the Dockerfile
+	EnvBuildDockerfile = "BUILD_DOCKERFILE"
+	// EnvBuildGoImportPath dictates where Go-based recipes should
+	// look for the main.go file
+	EnvBuildGoImportPath = "BUILD_GO_IMPORTPATH"
+	// EnvBuildImageParent dictates what the build tool should use as a base layer.
+	// Some recipes (e.g. BuildKit) will ignore this.
+	EnvBuildImageParent = "BUILD_IMAGE_PARENT"
+	// EnvBuildSLSABuildType overrides the SLSA build type field.
 	EnvBuildSLSABuildType = "BUILD_SLSA_BUILD_TYPE"
 
+	// EnvBuildCacheEnabled dictates whether we should instruct build tools
+	// to cache files. Disabling this may fix some problems at the cost of performance.
 	EnvBuildCacheEnabled = "BUILD_CACHE_ENABLED"
-	EnvBuildCachePath    = "BUILD_CACHE_PATH"
+	// EnvBuildCachePath describes the directory that
+	// we should instruct build tools to store their temporary files.
+	EnvBuildCachePath = "BUILD_CACHE_PATH"
 
 	EnvDockerConfig = "DOCKER_CONFIG"
 )

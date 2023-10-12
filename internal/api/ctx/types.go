@@ -1,7 +1,11 @@
 package ctx
 
+// EnvGitLabCI is used to detect that we are running inside
+// a GitLab CI job.
 const EnvGitLabCI = "GITLAB_CI"
 
+// GitLabContext contains the ambient environment variables
+// that are set by GitLab CI.
 type GitLabContext struct {
 	ProjectURL    string `env:"CI_PROJECT_URL"`
 	ProjectDir    string `env:"CI_PROJECT_DIR"`
