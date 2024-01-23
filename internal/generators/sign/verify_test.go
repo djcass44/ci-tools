@@ -8,7 +8,7 @@ import (
 
 func TestVerify(t *testing.T) {
 	t.Run("valid sig returns no error", func(t *testing.T) {
-		err := Verify(&civ1.BuildContext{}, "gcr.io/distroless/static-debian11:nonroot", "./testdata/distroless.pub", true)
+		err := Verify(&civ1.BuildContext{}, "gcr.io/kaniko-project/executor:debug", "./testdata/kaniko.pub", true)
 		assert.NoError(t, err)
 	})
 	t.Run("no sig returns error", func(t *testing.T) {
