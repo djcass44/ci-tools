@@ -1,82 +1,56 @@
 package sbom
 
 import (
+	"bytes"
+	"context"
+	"fmt"
 	"github.com/anchore/stereoscope/pkg/image"
 	"github.com/anchore/syft/syft"
-	"github.com/anchore/syft/syft/formats"
-	"github.com/anchore/syft/syft/formats/cyclonedxjson"
-	"github.com/anchore/syft/syft/pkg/cataloger"
-	"github.com/anchore/syft/syft/sbom"
-	"github.com/anchore/syft/syft/source"
+	"github.com/anchore/syft/syft/format/cyclonedxjson"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/djcass44/ci-tools/pkg/ociutil"
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
-func Execute(ctx *civ1.BuildContext, digest string) error {
-	// fetch the image
-	ref, err := name.ParseReference(ctx.FQTags[0])
-	if err != nil {
-		return err
+func Execute(ctx context.Context, bctx *civ1.BuildContext, digest string) error {
+	// if the image doesn't include the digest, add it
+	// to the end
+	ref := bctx.FQTags[0]
+	if !strings.Contains(ref, "@sha256:") {
+		ref = fmt.Sprintf("%s@sha256:%s", bctx.FQTags[0], digest)
 	}
-	log.Printf("generating SBOM for ref: %s", ref.String())
-	keychain := ociutil.KeyChain(ctx.Auth())
-	img, err := remote.Image(ref, remote.WithAuthFromKeychain(keychain))
-	if err != nil {
-		return err
+	log.Printf("generating SBOM for ref: %s", ref)
+
+	// configure syft to auth
+	sourceOptions := syft.DefaultGetSourceConfig()
+	sourceOptions.SourceProviderConfig.RegistryOptions = &image.RegistryOptions{
+		Keychain: ociutil.KeyChain(bctx.Auth()),
 	}
-	// create a temporary directory that we can give
-	// to syft for caching
-	tempDir, err := os.MkdirTemp("", "syft-*")
-	if err != nil {
-		return err
-	}
-	syftImage := image.New(img, tempDir, image.WithTags(ctx.Tags...))
-	if err := syftImage.Read(); err != nil {
-		return err
-	}
-	src, err := source.NewFromImage(syftImage, "")
+	src, err := syft.GetSource(ctx, ref, sourceOptions)
 	if err != nil {
 		return err
 	}
 
 	// hand it off to Syft
-	catalog, relationships, distro, err := syft.CatalogPackages(&src, cataloger.DefaultConfig())
+	artefact, err := syft.CreateSBOM(ctx, src, syft.DefaultCreateSBOMConfig())
 	if err != nil {
 		return err
-	}
-	artifact := sbom.SBOM{
-		Artifacts: sbom.Artifacts{
-			PackageCatalog:    catalog,
-			LinuxDistribution: distro,
-		},
-		Relationships: relationships,
-		Source: source.Metadata{
-			Scheme: source.ImageScheme,
-			ImageMetadata: source.ImageMetadata{
-				UserInput:      ctx.Image.Name,
-				Tags:           ctx.Tags,
-				ManifestDigest: digest,
-			},
-			Name: ctx.Image.Name,
-		},
-		Descriptor: sbom.Descriptor{
-			Name:    ctx.Image.Name,
-			Version: ctx.Tags[0],
-		},
 	}
 	// convert the SBOM into a CycloneDX
 	// report.
-	data, err := formats.Encode(artifact, cyclonedxjson.Format())
+	encoder, err := cyclonedxjson.NewFormatEncoderWithConfig(cyclonedxjson.DefaultEncoderConfig())
 	if err != nil {
 		return err
 	}
+	var buffer bytes.Buffer
+	if err := encoder.Encode(&buffer, *artefact); err != nil {
+		return err
+	}
 	// write to file
-	if err := os.WriteFile(filepath.Join(ctx.Root, outSBOM), data, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(bctx.Root, outSBOM), buffer.Bytes(), 0644); err != nil {
 		return err
 	}
 	return nil

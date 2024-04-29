@@ -153,7 +153,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	// generate the SBOM
 	digest := ociutil.GetDigest(fmt.Sprintf("%s:%s", context.Image.Name, context.Repo.CommitSha), auth)
 	if !skipSBOM {
-		if err := sbom.Execute(context, digest); err != nil {
+		if err := sbom.Execute(cmd.Context(), context, digest); err != nil {
 			return err
 		}
 	}
