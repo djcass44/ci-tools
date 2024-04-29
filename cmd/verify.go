@@ -5,6 +5,7 @@ import (
 	"github.com/djcass44/ci-tools/internal/generators/slsa"
 	"github.com/djcass44/ci-tools/internal/validators"
 	"github.com/djcass44/ci-tools/pkg/in_toto/vsa"
+	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
 	"github.com/spf13/cobra"
@@ -25,6 +26,10 @@ const (
 	flagExpectedSourceRepository = "expected-source-repo"
 
 	flagProvenancePermalink = "provenance-perma-link"
+
+	flagRegistry         = "registry"
+	flagRegistryUsername = "registry-username"
+	flagRegistryPassword = "registry-password"
 )
 
 func init() {
@@ -33,6 +38,10 @@ func init() {
 
 	verifyCmd.Flags().String(flagSLSAVersion, vsa.SlsaVersion02, "slsa version (1.0 or 0.2)")
 	verifyCmd.Flags().String(flagProvenancePermalink, "", "permanent reference (e.g. OCI image reference) that can be used to locate the SLSA provenance being verified")
+
+	verifyCmd.Flags().String(flagRegistry, "", "registry address")
+	verifyCmd.Flags().String(flagRegistryUsername, "", "registry username")
+	verifyCmd.Flags().String(flagRegistryPassword, "", "registry password")
 
 	_ = verifyCmd.MarkFlagRequired(flagExpectedSourceRepository)
 	_ = verifyCmd.MarkFlagRequired(flagProvenancePermalink)
@@ -48,6 +57,10 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 
 	slsaVersion, _ := cmd.Flags().GetString(flagSLSAVersion)
 	permaLink, _ := cmd.Flags().GetString(flagProvenancePermalink)
+
+	registry, _ := cmd.Flags().GetString(flagRegistry)
+	registryUsername, _ := cmd.Flags().GetString(flagRegistryUsername)
+	registryPassword, _ := cmd.Flags().GetString(flagRegistryPassword)
 
 	// read the statement
 	var statement1 *in_toto.ProvenanceStatementSLSA1
@@ -89,10 +102,17 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 		log.Printf("%s... SUCCESS", k)
 	}
 
-	// todo generate a digest of the file
+	// generate the digest of the provenance file
+	digest := ociutil.GetDigest(permaLink, ociutil.Auth{
+		Registry: registry,
+		Username: registryUsername,
+		Password: registryPassword,
+	})
 	provenanceMeta := common.ProvenanceMaterial{
-		URI:    permaLink,
-		Digest: map[string]string{},
+		URI: permaLink,
+		Digest: common.DigestSet{
+			slsa.DigestSha256: digest,
+		},
 	}
 
 	var data string

@@ -33,19 +33,19 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predi
 			Digest: repoDigest,
 		},
 		{
-			URI:    purl.Parse(purl.TypeOCI, ctx.Image.Base, baseDigest, digestSha256, ""),
-			Digest: common.DigestSet{digestSha256: baseDigest},
+			URI:    purl.Parse(purl.TypeOCI, ctx.Image.Base, baseDigest, DigestSha256, ""),
+			Digest: common.DigestSet{DigestSha256: baseDigest},
 		},
 		{
-			URI:    purl.Parse(purl.TypeOCI, ctx.Image.Parent, parentDigest, digestSha256, ""),
-			Digest: common.DigestSet{digestSha256: parentDigest},
+			URI:    purl.Parse(purl.TypeOCI, ctx.Image.Parent, parentDigest, DigestSha256, ""),
+			Digest: common.DigestSet{DigestSha256: parentDigest},
 		},
 	}
 
 	subjects := []in_toto.Subject{
 		{
-			Name:   purl.Parse(purl.TypeOCI, ctx.Image.Name, digest, digestSha256, ""),
-			Digest: common.DigestSet{digestSha256: digest},
+			Name:   purl.Parse(purl.TypeOCI, ctx.Image.Name, digest, DigestSha256, ""),
+			Digest: common.DigestSet{DigestSha256: digest},
 		},
 	}
 
@@ -110,11 +110,11 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predi
 			Byproducts: []v1.ResourceDescriptor{
 				{
 					URI:    ctx.ConfigPath,
-					Digest: common.DigestSet{digestSha256: configHash},
+					Digest: common.DigestSet{DigestSha256: configHash},
 				},
 				{
 					URI:    outPath,
-					Digest: common.DigestSet{digestSha256: outHash},
+					Digest: common.DigestSet{DigestSha256: outHash},
 				},
 			},
 		},

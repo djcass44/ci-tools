@@ -4,7 +4,7 @@ import civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 
 const (
 	digestSha1   = "sha1"
-	digestSha256 = "sha256"
+	DigestSha256 = "sha256"
 
 	DefaultBuildType    = "https://github.com/djcass44/ci-tools@v1"
 	DefaultVerifierType = "https://github.com/djcass44/ci-tools@v1"

@@ -21,7 +21,7 @@ func TestVSA(t *testing.T) {
 	out, err := VSA(true, &provenance, common.ProvenanceMaterial{
 		URI: "https://example.com/provenances/example-1.2.3.tar.gz.intoto.jsonl",
 		Digest: map[string]string{
-			digestSha256: "deadbeef",
+			DigestSha256: "deadbeef",
 		},
 	})
 	assert.NoError(t, err)
