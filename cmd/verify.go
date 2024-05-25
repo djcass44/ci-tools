@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
 	"github.com/djcass44/ci-tools/internal/generators/slsa"
 	"github.com/djcass44/ci-tools/internal/validators"
 	"github.com/djcass44/ci-tools/pkg/in_toto/vsa"
@@ -103,7 +104,7 @@ func verifyFunc(cmd *cobra.Command, args []string) error {
 	}
 
 	// generate the digest of the provenance file
-	digest := ociutil.GetDigest(permaLink, ociutil.Auth{
+	digest := ociutil.GetDigest(permaLink, auth.Auth{
 		Registry: registry,
 		Username: registryUsername,
 		Password: registryPassword,

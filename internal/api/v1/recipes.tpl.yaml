@@ -23,6 +23,32 @@ build:
       {{- range $i, $e := .ExtraArgs }}
       - "{{ $e }}"
       {{- end }}
+  com.github.Snakdy.container-build-engine:
+    dockercfg: true
+    command: container-build-engine
+    args:
+      - build
+      - --image={{ .Image.Name }}
+      - -t
+      - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
+      {{- range $i, $e := .ExtraArgs }}
+      - "{{ $e }}"
+      {{- end }}
+  com.github.Snakdy.terrarium:
+    dockercfg: true
+    env:
+      TERRARIUM_DEFAULT_BASE_IMAGE: "{{ .Image.Parent }}"
+      TERRARIUM_DOCKER_REPO: "{{ .Image.Name }}"
+      TERRARIUM_CACHE: "{{ .Cache.Path }}"
+    command: terrarium
+    args:
+      - build
+      - -t
+      - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
+      {{- range $i, $e := .ExtraArgs }}
+      - "{{ $e }}"
+      {{- end }}
+      - {{ .Context }}
   com.github.djcass44.nib:
     dockercfg: true
     env:

@@ -3,8 +3,8 @@ package sign
 import (
 	"context"
 	"errors"
+	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
-	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/sigstore/cosign/v2/cmd/cosign/cli/sign"
@@ -28,7 +28,7 @@ func prepare(ctx *civ1.BuildContext, target string) (name.Reference, []ociremote
 	// configure authentication if the target
 	// is within our registry
 	if strings.HasPrefix(target, ctx.Image.Registry) {
-		keychain := ociutil.KeyChain(ctx.Auth())
+		keychain := auth.KeyChain(ctx.Auth())
 		opts = append(opts, ociremote.WithRemoteOptions(remote.WithAuthFromKeychain(keychain)))
 	}
 	ref, err = sign.GetAttachedImageRef(ref, "", opts...)

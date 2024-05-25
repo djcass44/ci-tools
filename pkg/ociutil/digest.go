@@ -3,6 +3,7 @@ package ociutil
 import (
 	"errors"
 	"fmt"
+	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/google/go-containerregistry/pkg/name"
 	"log"
@@ -14,8 +15,8 @@ import (
 //
 // If the digest cannot be found, an
 // empty string is returned.
-func GetDigest(target string, auth Auth) string {
-	sha, err := crane.Digest(target, crane.WithAuthFromKeychain(KeyChain(auth)))
+func GetDigest(target string, authn auth.Auth) string {
+	sha, err := crane.Digest(target, crane.WithAuthFromKeychain(auth.KeyChain(authn)))
 	if err != nil {
 		log.Printf("unable to generate digest for: %s (%s)", target, err)
 		return ""
@@ -25,7 +26,7 @@ func GetDigest(target string, auth Auth) string {
 
 // SnapshotImage mangles a given OCI string so that
 // there is a digest present.
-func SnapshotImage(target string, auth Auth) (string, error) {
+func SnapshotImage(target string, authn auth.Auth) (string, error) {
 	ref, err := name.ParseReference(target)
 	if err != nil {
 		return "", err
@@ -41,7 +42,7 @@ func SnapshotImage(target string, auth Auth) (string, error) {
 	}
 	// otherwise grab the digest for the tag and
 	// splice it in
-	digest := GetDigest(ref.String(), auth)
+	digest := GetDigest(ref.String(), authn)
 	if digest == "" {
 		return "", errors.New("could not generate digest")
 	}

@@ -2,7 +2,7 @@ package v1
 
 import (
 	"fmt"
-	"github.com/djcass44/ci-tools/pkg/ociutil"
+	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
 	"log"
 	"os"
 	"path/filepath"
@@ -109,8 +109,8 @@ func (c *BuildContext) DockerCFG() string {
 }`, c.Image.Registry, c.Image.Username, c.Image.Password)
 }
 
-func (c *BuildContext) Auth() ociutil.Auth {
-	return ociutil.Auth{
+func (c *BuildContext) Auth() auth.Auth {
+	return auth.Auth{
 		Registry: c.Image.Registry,
 		Username: c.Image.Username,
 		Password: c.Image.Password,

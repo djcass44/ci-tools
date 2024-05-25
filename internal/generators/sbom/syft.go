@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
 	"github.com/anchore/stereoscope/pkg/image"
 	"github.com/anchore/syft/syft"
 	"github.com/anchore/syft/syft/format/cyclonedxjson"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
-	"github.com/djcass44/ci-tools/pkg/ociutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -27,7 +27,7 @@ func Execute(ctx context.Context, bctx *civ1.BuildContext, digest string) error 
 	// configure syft to auth
 	sourceOptions := syft.DefaultGetSourceConfig()
 	sourceOptions.SourceProviderConfig.RegistryOptions = &image.RegistryOptions{
-		Keychain: ociutil.KeyChain(bctx.Auth()),
+		Keychain: auth.KeyChain(bctx.Auth()),
 	}
 	src, err := syft.GetSource(ctx, ref, sourceOptions)
 	if err != nil {
