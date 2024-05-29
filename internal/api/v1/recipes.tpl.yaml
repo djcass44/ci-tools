@@ -29,8 +29,7 @@ build:
     args:
       - build
       - --image={{ .Image.Name }}
-      - -t
-      - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
+      - -t="{{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}"
       {{- range $i, $e := .ExtraArgs }}
       - "{{ $e }}"
       {{- end }}
@@ -43,8 +42,7 @@ build:
     command: terrarium
     args:
       - build
-      - -t
-      - {{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}
+      - -t="{{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}"
       {{- range $i, $e := .ExtraArgs }}
       - "{{ $e }}"
       {{- end }}
