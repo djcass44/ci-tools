@@ -36,8 +36,10 @@ const (
 	flagCosignPublicKey    = "cosign-verify-key"
 	flagCosignPublicKeyDir = "cosign-verify-dir"
 	flagCosignOffline      = "cosign-offline"
-	flagSLSAVersion        = "slsa-version"
-	flagSLSAPredicateOnly  = "slsa-predicate-only"
+	flagCosignFulcioURL    = "cosign-fulcio-url"
+
+	flagSLSAVersion       = "slsa-version"
+	flagSLSAPredicateOnly = "slsa-predicate-only"
 )
 
 func init() {
@@ -52,7 +54,9 @@ func init() {
 
 	buildCmd.Flags().String(flagCosignPublicKey, "", "path to the Cosign public key used for verifying parent images")
 	buildCmd.Flags().String(flagCosignPublicKeyDir, "", "path to the directory containing Cosign public keys used for verifying parent images")
+	buildCmd.Flags().String(flagCosignFulcioURL, "", "url of the Fulcio instance")
 	buildCmd.Flags().Bool(flagCosignOffline, true, "stops Cosign from communicating with any online resources (e.g., fulcio, rekor) when verifying images")
+
 	buildCmd.Flags().String(flagSLSAVersion, vsa.SlsaVersion02, "slsa version (1.0 or 0.2)")
 	buildCmd.Flags().Bool(flagSLSAPredicateOnly, false, "do not generate the provenance statement, only the predicate. Needed for compatability with some tools (e.g. cosign)")
 
@@ -79,6 +83,7 @@ func build(cmd *cobra.Command, _ []string) error {
 
 	cosignPub, _ := cmd.Flags().GetString(flagCosignPublicKey)
 	cosignPubDir, _ := cmd.Flags().GetString(flagCosignPublicKeyDir)
+	cosignFulcioURL, _ := cmd.Flags().GetString(flagCosignFulcioURL)
 	cosignOffline, err := cmd.Flags().GetBool(flagCosignOffline)
 	if err != nil {
 		log.Println("unable to retrieve the value of the --cosign-offline flag")
@@ -138,6 +143,11 @@ func build(cmd *cobra.Command, _ []string) error {
 				return err
 			}
 		} else {
+			if cosignFulcioURL != "" {
+				if err := sign.VerifyFulcio(context, context.Image.Parent, cosignFulcioURL); err != nil {
+					log.Printf("failed to verify parent image signature using Fulcio")
+				}
+			}
 			if err := sign.VerifyAny(context, context.Image.Parent, cosignPubDir, cosignOffline); err != nil {
 				log.Print("failed to verify Cosign signature on parent image")
 				return err

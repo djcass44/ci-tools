@@ -2,9 +2,21 @@ package sign
 
 import (
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/sigstore/fulcio/pkg/api"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
+func TestVerifyFulcio(t *testing.T) {
+	//t.Run("valid sig returns no error", func(t *testing.T) {
+	//	err := VerifyFulcio(&civ1.BuildContext{}, "quay.io/argoproj/argocd:v2.7.0", api.SigstorePublicServerURL)
+	//	assert.NoError(t, err)
+	//})
+	t.Run("no sig returns error", func(t *testing.T) {
+		err := VerifyFulcio(&civ1.BuildContext{}, "registry.gitlab.com/av1o/base-images/alpine:2542119d", api.SigstorePublicServerURL)
+		assert.Error(t, err)
+	})
+}
 
 func TestVerify(t *testing.T) {
 	t.Run("valid sig returns no error", func(t *testing.T) {
