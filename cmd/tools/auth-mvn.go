@@ -4,6 +4,7 @@ import (
 	"github.com/spf13/cobra"
 	"gitlab.com/av1o/mvn-settings-gen/pkg/maven"
 	"os"
+	"path/filepath"
 )
 
 var mvnAuthCmd = &cobra.Command{
@@ -47,7 +48,7 @@ func mvnAuth(cmd *cobra.Command, _ []string) error {
 	}
 
 	// write the data to file
-	if err := os.WriteFile(output, []byte(str), 0644); err != nil {
+	if err := os.WriteFile(filepath.Clean(output), []byte(str), 0644); err != nil {
 		return err
 	}
 

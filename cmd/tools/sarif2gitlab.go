@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"gitlab.com/av1o/gitlab-cq/pkg/generic"
 	"os"
+	"path/filepath"
 )
 
 var sarif2GitLabCmd = &cobra.Command{
@@ -33,7 +34,7 @@ func sarif2GitLab(cmd *cobra.Command, _ []string) error {
 	output, _ := cmd.Flags().GetString(flagOutputFile)
 
 	// read the sarif report
-	report, err := sarif.Open(input)
+	report, err := sarif.Open(filepath.Clean(input))
 	if err != nil {
 		return err
 	}
@@ -41,7 +42,7 @@ func sarif2GitLab(cmd *cobra.Command, _ []string) error {
 	gitlabReport := generic.AsGitLab(report)
 
 	// create the output file
-	f, err := os.Create(output)
+	f, err := os.Create(filepath.Clean(output))
 	if err != nil {
 		return err
 	}

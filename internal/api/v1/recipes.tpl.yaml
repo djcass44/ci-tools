@@ -9,6 +9,8 @@ build:
       - compile
       - com.google.cloud.tools:jib-maven-plugin:3.3.2:build
       - -Djib.from.image={{ .Image.Parent }}
+      - -Djib.from.auth.username={{ .Image.Username }}
+      - -Djib.from.auth.password=$BUILD_IMAGE_PASSWORD
       - -Djib.to.image={{ .Image.Name }}
       - -Djib.to.auth.username={{ .Image.Username }}
       - -Djib.to.auth.password=$BUILD_IMAGE_PASSWORD
@@ -131,13 +133,14 @@ dockerfiles:
   python/micropipenv@v1:
     content:
       inline: |
-        ARG BASE_VERSION=3
-        ARG BASE_REPO=registry.gitlab.com/av1o/base-images/python
+        ARG BASE_VERSION=master
+        ARG BASE_REPO=registry.gitlab.com/av1o/base-images/python-3.12
         FROM $BASE_REPO:$BASE_VERSION
 
         RUN mkdir -p /home/somebody/app
         WORKDIR /home/somebody/app
 
+        ARG MICROPIPENV_DEFAULT_INDEX_URLS
         COPY requirements.txt .
         RUN pip install micropipenv && \
             micropipenv install

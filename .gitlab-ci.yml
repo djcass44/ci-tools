@@ -14,7 +14,7 @@ build binary:
   stage: build
   needs: []
   dependencies: []
-  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.21-rolling
+  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-1.22-debian
   variables:
     GOFLAGS: "-buildvcs=false"
     GOPATH: $CI_PROJECT_DIR/.go
@@ -32,7 +32,7 @@ build binary:
 
 integrate ko:
   stage: integrate
-  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-ubuntu:1.21-rolling
+  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/go-1.22-debian
   dependencies:
     - build binary
   needs:
@@ -55,7 +55,7 @@ integrate ko:
       mv ci bin/
       export PATH="$PATH:$CI_PROJECT_DIR/bin"
       
-      wget -qO- "https://github.com/ko-build/ko/releases/download/v0.12.0/ko_0.12.0_Linux_x86_64.tar.gz" | tar -xvz ko
+      wget -qO- "https://github.com/ko-build/ko/releases/download/v0.15.4/ko_0.15.4_Linux_x86_64.tar.gz" | tar -xvz ko
       install ./ko "$CI_PROJECT_DIR/bin/ko"
     - ci build --recipe com.github.google.ko --cosign-verify-key="$CI_PROJECT_DIR/internal/generators/sign/testdata/distroless.pub"  --slsa-version 1.0
   rules:
@@ -66,14 +66,14 @@ integrate ko:
 
 integrate nib:
   stage: integrate
-  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/node:lts
+  image: harbor.dcas.dev/registry.gitlab.com/av1o/base-images/node-20
   dependencies:
     - build binary
   needs:
     - build binary
   variables:
     PROJECT_PATH: samples/static
-    BUILD_IMAGE_PARENT: harbor.dcas.dev/ghcr.io/djcass44/nib/srv:v1.0.2
+    BUILD_IMAGE_PARENT: harbor.dcas.dev/ghcr.io/djcass44/nib/srv:v1.4.0
   cache:
     paths:
       - .cache
@@ -89,7 +89,7 @@ integrate nib:
       mv ci bin/
       export PATH="$PATH:$CI_PROJECT_DIR/bin"
       
-      wget -qO- "https://github.com/djcass44/nib/releases/download/v1.0.2/nib_1.0.2_linux_amd64.tar.gz" | tar -xvz nib
+      wget -qO- "https://github.com/djcass44/nib/releases/download/v1.4.0/nib_1.4.0_linux_amd64.tar.gz" | tar -xvz nib
       install ./nib "$CI_PROJECT_DIR/bin/nib"
     - ci build --recipe com.github.djcass44.nib --skip-cosign-verify=true  --slsa-version 1.0
   rules:
@@ -129,35 +129,34 @@ integrate jib:
     - when: on_success
   <<: *rules
 
-integrate buildkit:
-  stage: integrate
-  image: harbor.dcas.dev/docker.io/moby/buildkit:v0.11.3-rootless
-  dependencies:
-    - build binary
-  needs:
-    - build binary
-  variables:
-    PROJECT_PATH: samples/python
-    KUBERNETES_POD_ANNOTATIONS_1: "container.apparmor.security.beta.kubernetes.io/build=unconfined"
-    KUBERNETES_POD_ANNOTATIONS_2: "container.seccomp.security.alpha.kubernetes.io/build=unconfined"
-  cache:
-    paths:
-      - .cache
-    key: buildkit
-  artifacts:
-    paths:
-      - sbom.cdx.json
-      - provenance.slsa.json
-      - build.txt
-  script:
-    - ./ci dockerfile --name python/micropipenv@v1
-    - ./ci build --recipe com.github.moby.buildkit --slsa-version 1.0
-  rules:
-    - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
-      when: never
-    - when: on_success
-  <<: *rules
+#integrate buildkit:
+#  stage: integrate
+#  image: harbor.dcas.dev/docker.io/moby/buildkit:v0.11.3-rootless
+#  dependencies:
+#    - build binary
+#  needs:
+#    - build binary
+#  variables:
+#    PROJECT_PATH: samples/python
+#    KUBERNETES_POD_ANNOTATIONS_1: "container.apparmor.security.beta.kubernetes.io/build=unconfined"
+#    KUBERNETES_POD_ANNOTATIONS_2: "container.seccomp.security.alpha.kubernetes.io/build=unconfined"
+#  cache:
+#    paths:
+#      - .cache
+#    key: buildkit
+#  artifacts:
+#    paths:
+#      - sbom.cdx.json
+#      - provenance.slsa.json
+#      - build.txt
+#  script:
+#    - ./ci dockerfile --name python/micropipenv@v1
+#    - ./ci build --recipe com.github.moby.buildkit --slsa-version 1.0
+#  rules:
+#    - if: "$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH"
+#      when: never
+#    - when: on_success
+#  <<: *rules
 
 include:
-#  - remote: https://gitlab.com/av1o/gitlab-ci-templates/-/raw/master/verify/Semgrep-Quality.gitlab-ci.yml
-  - remote: https://gitlab.com/av1o/gitlab-ci-templates/-/raw/master/test/Go-Test.gitlab-ci.yml
+  - component: gitlab.dcas.dev/autodevops/components/go-test@main
