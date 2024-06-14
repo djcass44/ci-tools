@@ -40,6 +40,8 @@ const (
 
 	flagSLSAVersion       = "slsa-version"
 	flagSLSAPredicateOnly = "slsa-predicate-only"
+
+	flagHairpinTag = "hairpin-tag"
 )
 
 func init() {
@@ -59,6 +61,8 @@ func init() {
 
 	buildCmd.Flags().String(flagSLSAVersion, vsa.SlsaVersion02, "slsa version (1.0 or 0.2)")
 	buildCmd.Flags().Bool(flagSLSAPredicateOnly, false, "do not generate the provenance statement, only the predicate. Needed for compatability with some tools (e.g. cosign)")
+
+	buildCmd.Flags().String(flagHairpinTag, "", "tag to use when validating the image after we've built it. May be needed with some non-standard build tools such as 'helm'. Defaults to the commit sha.")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagRecipe)
@@ -134,6 +138,11 @@ func build(cmd *cobra.Command, _ []string) error {
 	// prepare cache directories
 	cache.Execute(context)
 
+	hairpinTag, _ := cmd.Flags().GetString(flagHairpinTag)
+	if hairpinTag == "" {
+		hairpinTag = context.Repo.CommitSha
+	}
+
 	// verify the parent image if one has been specified
 	if context.Image.Parent != "" && !skipCosignVerify {
 		// if an explicit key has been given, use that
@@ -161,7 +170,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// generate the SBOM
-	digest := ociutil.GetDigest(fmt.Sprintf("%s:%s", context.Image.Name, context.Repo.CommitSha), auth)
+	digest := ociutil.GetDigest(fmt.Sprintf("%s:%s", context.Image.Name, hairpinTag), auth)
 	if !skipSBOM {
 		if err := sbom.Execute(cmd.Context(), context, digest); err != nil {
 			return err
