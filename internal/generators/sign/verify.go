@@ -2,7 +2,6 @@ package sign
 
 import (
 	"context"
-	"crypto"
 	"errors"
 	"fmt"
 	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
@@ -14,8 +13,6 @@ import (
 	"github.com/sigstore/cosign/v2/pkg/cosign"
 	ociremote "github.com/sigstore/cosign/v2/pkg/oci/remote"
 	"github.com/sigstore/cosign/v2/pkg/signature"
-	"github.com/sigstore/sigstore/pkg/cryptoutils"
-	signature2 "github.com/sigstore/sigstore/pkg/signature"
 	"io"
 	"io/fs"
 	"log"
@@ -47,29 +44,15 @@ func prepare(ctx *civ1.BuildContext, target string) (name.Reference, []ociremote
 // instance.
 func VerifyFulcio(ctx *civ1.BuildContext, target, fulcioURL string) error {
 	// connect to fulcio
-	fc, err := fulcio.NewClient(fulcioURL)
+	// SET THE 'SIGSTORE_ROOT_FILE' ENVIRONMENT VARIABLE IF YOU'RE USING A
+	// CUSTOM FULCIO DEPLOYMENT
+	roots, err := fulcio.GetRoots()
 	if err != nil {
-		return err
+		return fmt.Errorf("retrieving fulcio roots: %w", err)
 	}
-	rootCert, err := fc.RootCert()
+	intermediates, err := fulcio.GetIntermediates()
 	if err != nil {
-		return fmt.Errorf("extracting root cert: %w", err)
-	}
-	certs, err := cryptoutils.UnmarshalCertificatesFromPEM(rootCert.ChainPEM)
-	if err != nil {
-		return fmt.Errorf("extracting cert chain: %w", err)
-	}
-	log.Printf("loaded %d certificates from Fulcio", len(certs))
-	if len(certs) == 0 {
-		return errors.New("no certificates found")
-	}
-	// grab the public key from the first certificate in the chain
-	pubKey := certs[0].PublicKey
-
-	// create the signer
-	verifier, err := signature2.LoadVerifier(pubKey, crypto.SHA256)
-	if err != nil {
-		return err
+		return fmt.Errorf("retrieving fulcio intermediate certificates: %w", err)
 	}
 
 	ref, opts, err := prepare(ctx, target)
@@ -80,7 +63,8 @@ func VerifyFulcio(ctx *civ1.BuildContext, target, fulcioURL string) error {
 	log.Printf("checking if image (%s) has been signed by fulcio: '%s'", ref.String(), fulcioURL)
 	signatures, _, err := cosign.VerifyImageSignatures(context.Background(), ref, &cosign.CheckOpts{
 		RegistryClientOpts: opts,
-		SigVerifier:        verifier,
+		RootCerts:          roots,
+		IntermediateCerts:  intermediates,
 		Offline:            true,
 		IgnoreSCT:          true,
 		IgnoreTlog:         true,

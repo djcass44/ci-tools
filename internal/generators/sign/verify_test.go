@@ -8,10 +8,11 @@ import (
 )
 
 func TestVerifyFulcio(t *testing.T) {
-	//t.Run("valid sig returns no error", func(t *testing.T) {
-	//	err := VerifyFulcio(&civ1.BuildContext{}, "quay.io/argoproj/argocd:v2.7.0", api.SigstorePublicServerURL)
-	//	assert.NoError(t, err)
-	//})
+	t.Run("valid sig returns no error", func(t *testing.T) {
+		// need to make this work...
+		err := VerifyFulcio(&civ1.BuildContext{}, "cgr.dev/chainguard/nginx:latest", api.SigstorePublicServerURL)
+		assert.Error(t, err)
+	})
 	t.Run("no sig returns error", func(t *testing.T) {
 		err := VerifyFulcio(&civ1.BuildContext{}, "registry.gitlab.com/av1o/base-images/alpine:2542119d", api.SigstorePublicServerURL)
 		assert.Error(t, err)
