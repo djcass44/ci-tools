@@ -2,6 +2,8 @@ package runtime
 
 import (
 	"fmt"
+	"github.com/a8m/envsubst"
+	"github.com/a8m/envsubst/parse"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"log"
 	"os"
@@ -38,30 +40,19 @@ func prepareEnv(env map[string]string, args []string) ([]string, []string) {
 	// expand our new environment variables
 	var newEnv []string
 	for k, v := range env {
-		newEnv = append(newEnv, fmt.Sprintf("%s=%s", k, os.ExpandEnv(v)))
+		val, _ := envsubst.String(v)
+		newEnv = append(newEnv, fmt.Sprintf("%s=%s", k, val))
 	}
 
 	// expand the arguments using a mix of the application environment
 	// and our new recipe-specific environment variables
 	fullEnv := append(newEnv, os.Environ()...)
+	parser := parse.New("", fullEnv, parse.Relaxed)
+
 	envArgs := make([]string, len(args))
 	for i := range args {
-		envArgs[i] = os.Expand(args[i], func(s string) string {
-			return getEnv(fullEnv, s)
-		})
+		val, _ := parser.Parse(args[i])
+		envArgs[i] = val
 	}
 	return newEnv, envArgs
-}
-
-func getEnv(env []string, key string) string {
-	for _, e := range env {
-		k, v, ok := strings.Cut(e, "=")
-		if !ok {
-			continue
-		}
-		if k == key {
-			return v
-		}
-	}
-	return ""
 }

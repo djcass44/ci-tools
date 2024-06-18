@@ -7,6 +7,7 @@ toolchain go1.22.1
 require (
 	github.com/Netflix/go-env v0.0.0-20220526054621-78278af1949d
 	github.com/Snakdy/container-build-engine v0.1.6
+	github.com/a8m/envsubst v1.4.2
 	github.com/anchore/packageurl-go v0.1.1-0.20240312213626-055233e539b4
 	github.com/anchore/stereoscope v0.0.3-0.20240423181235-8b297badafd5
 	github.com/anchore/syft v1.3.0
@@ -14,6 +15,7 @@ require (
 	github.com/in-toto/in-toto-golang v0.9.0
 	github.com/owenrumney/go-sarif v1.1.1
 	github.com/sigstore/cosign/v2 v2.2.4
+	github.com/sigstore/fulcio v1.4.5
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
 	gitlab.com/av1o/gitlab-cq v0.0.0-20230819233234-8172eecb6c1e
@@ -257,7 +259,6 @@ require (
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/shibumi/go-pathspec v1.3.0 // indirect
 	github.com/shopspring/decimal v1.2.0 // indirect
-	github.com/sigstore/fulcio v1.4.5 // indirect
 	github.com/sigstore/rekor v1.3.6 // indirect
 	github.com/sigstore/sigstore v1.8.3 // indirect
 	github.com/sigstore/timestamp-authority v1.2.2 // indirect
