@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predicateOnly bool) error {
+func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, ref, digest string, predicateOnly bool) error {
 	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.CommitSha, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
@@ -41,7 +41,7 @@ func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, pred
 
 	subjects := []in_toto.Subject{
 		{
-			Name:   purl.Parse(purl.TypeOCI, ctx.Image.Name, digest, DigestSha256, ""),
+			Name:   purl.Parse(purl.TypeOCI, ref, digest, DigestSha256, ""),
 			Digest: common.DigestSet{DigestSha256: digest},
 		},
 	}

@@ -41,7 +41,8 @@ const (
 	flagSLSAVersion       = "slsa-version"
 	flagSLSAPredicateOnly = "slsa-predicate-only"
 
-	flagHairpinTag = "hairpin-tag"
+	flagHairpinTag  = "hairpin-tag"
+	flagHairpinRepo = "hairpin-repo"
 )
 
 func init() {
@@ -63,6 +64,7 @@ func init() {
 	buildCmd.Flags().Bool(flagSLSAPredicateOnly, false, "do not generate the provenance statement, only the predicate. Needed for compatability with some tools (e.g. cosign)")
 
 	buildCmd.Flags().String(flagHairpinTag, "", "tag to use when validating the image after we've built it. May be needed with some non-standard build tools such as 'helm'. Defaults to the commit sha.")
+	buildCmd.Flags().String(flagHairpinRepo, "", "repository to use when validating the image after we've built it. May be needed with some non-standard build tools such as 'helm'.")
 
 	// flag options
 	_ = buildCmd.MarkFlagRequired(flagRecipe)
@@ -142,6 +144,10 @@ func build(cmd *cobra.Command, _ []string) error {
 	if hairpinTag == "" {
 		hairpinTag = context.Repo.CommitSha
 	}
+	hairpinRepo, _ := cmd.Flags().GetString(flagHairpinRepo)
+	if hairpinRepo == "" {
+		hairpinRepo = strings.TrimPrefix(context.Image.Name, context.Image.Registry)
+	}
 
 	// verify the parent image if one has been specified
 	if context.Image.Parent != "" && !skipCosignVerify {
@@ -170,9 +176,10 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// generate the SBOM
-	digest := ociutil.GetDigest(fmt.Sprintf("%s:%s", context.Image.Name, hairpinTag), auth)
+	imageRef := fmt.Sprintf("%s/%s:%s", context.Image.Registry, hairpinRepo, hairpinTag)
+	digest := ociutil.GetDigest(imageRef, auth)
 	if !skipSBOM {
-		if err := sbom.Execute(cmd.Context(), context, digest); err != nil {
+		if err := sbom.Execute(cmd.Context(), context, imageRef, digest); err != nil {
 			return err
 		}
 	}
@@ -182,7 +189,7 @@ func build(cmd *cobra.Command, _ []string) error {
 		if slsaVersion == vsa.SlsaVersion1 {
 			f = slsa.ExecuteV1
 		}
-		if err := f(context, &recipe, digest, slsaPredicateOnly); err != nil {
+		if err := f(context, &recipe, imageRef, digest, slsaPredicateOnly); err != nil {
 			return err
 		}
 	}

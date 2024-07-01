@@ -15,10 +15,9 @@ import (
 	"strings"
 )
 
-func Execute(ctx context.Context, bctx *civ1.BuildContext, digest string) error {
+func Execute(ctx context.Context, bctx *civ1.BuildContext, ref, digest string) error {
 	// if the image doesn't include the digest, add it
 	// to the end
-	ref := bctx.FQTags[0]
 	if !strings.Contains(ref, "@sha256:") {
 		ref = fmt.Sprintf("%s@sha256:%s", bctx.FQTags[0], digest)
 	}

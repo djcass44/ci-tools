@@ -27,7 +27,7 @@ func TestExecute(t *testing.T) {
 			Enabled: true,
 			Path:    filepath.Join(tmp, ".cache"),
 		},
-	}, "98706f0f213dbd440021993a82d2f70451a73698315370ae8615cc468ac06624")
+	}, "harbor.dcas.dev/docker.io/library/ubuntu:18.04", "98706f0f213dbd440021993a82d2f70451a73698315370ae8615cc468ac06624")
 	assert.NoError(t, err)
 
 	data, err := os.ReadFile(filepath.Join(tmp, "sbom.cdx.json"))

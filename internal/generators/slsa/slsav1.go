@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predicateOnly bool) error {
+func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, ref, digest string, predicateOnly bool) error {
 	repoURL := purl.Parse(ctx.Provider, ctx.Repo.URL, ctx.Repo.CommitSha, digestSha1, ctx.Context)
 	repoDigest := common.DigestSet{digestSha1: ctx.Repo.CommitSha}
 
@@ -44,7 +44,7 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predi
 
 	subjects := []in_toto.Subject{
 		{
-			Name:   purl.Parse(purl.TypeOCI, ctx.Image.Name, digest, DigestSha256, ""),
+			Name:   purl.Parse(purl.TypeOCI, ref, digest, DigestSha256, ""),
 			Digest: common.DigestSet{DigestSha256: digest},
 		},
 	}
@@ -78,7 +78,7 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, digest string, predi
 
 	// write the digest file
 	outPath := filepath.Join(ctx.Root, outBuild)
-	if err := os.WriteFile(outPath, []byte(fmt.Sprintf("%s:%s@sha256:%s", ctx.Image.Name, ctx.Repo.CommitSha, digest)), 0644); err != nil {
+	if err := os.WriteFile(outPath, []byte(fmt.Sprintf("%s@sha256:%s", ref, digest)), 0644); err != nil {
 		return err
 	}
 
