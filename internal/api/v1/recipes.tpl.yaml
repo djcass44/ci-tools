@@ -31,9 +31,11 @@ build:
     args:
       - build
       - --image={{ .Image.Name }}
-      - -t="{{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}"
+      {{- range $i, $e := .Tags }}
+      - -t={{ $e }}
+      {{- end }}
       {{- range $i, $e := .ExtraArgs }}
-      - "{{ $e }}"
+      - {{ $e }}
       {{- end }}
   com.github.Snakdy.terrarium:
     dockercfg: true
@@ -44,9 +46,11 @@ build:
     command: terrarium
     args:
       - build
-      - -t="{{ range $i, $e := .Tags }}{{ if $i }},{{ end }}{{ $e }}{{ end }}"
+      {{- range $i, $e := .Tags }}
+      - -t={{ $e }}
+      {{- end }}
       {{- range $i, $e := .ExtraArgs }}
-      - "{{ $e }}"
+      - {{ $e }}
       {{- end }}
       - {{ .Context }}
   com.github.djcass44.nib:
