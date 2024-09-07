@@ -23,8 +23,8 @@ The inputs captured are:
 In order to accurately capture the build process, the provenance captures:
 
 1. The arguments passed to the `ci` CLI applications
-1. The arguments that `ci` passes to the underlying build tool.
-1. The shell that was used by the CI runner (e.g. `/bin/bash`)
+2. The arguments that `ci` passes to the underlying build tool.
+3. The shell that was used by the CI runner (e.g. `/bin/bash`)
 
 The combination of this data is all that is required to accurately capture how the application was built.
 

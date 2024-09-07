@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"github.com/djcass44/ci-tools/internal/api/ctx"
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
@@ -9,8 +10,11 @@ import (
 	"github.com/djcass44/ci-tools/internal/generators/sbom"
 	"github.com/djcass44/ci-tools/internal/generators/sign"
 	"github.com/djcass44/ci-tools/internal/generators/slsa"
+	"github.com/djcass44/ci-tools/internal/metrics"
 	"github.com/djcass44/ci-tools/pkg/in_toto/vsa"
 	"github.com/djcass44/ci-tools/pkg/ociutil"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/push"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
@@ -45,6 +49,11 @@ const (
 	flagHairpinRepo = "hairpin-repo"
 )
 
+const (
+	envPrometheusGatewayURL = "PROMETHEUS_PUSH_URL"
+	envPrometheusJobName    = "PROMETHEUS_JOB_NAME"
+)
+
 func init() {
 	buildCmd.Flags().StringP(flagRecipe, "a", "", "application recipe to use")
 	buildCmd.Flags().String(flagRecipeTemplate, "", "override the default recipe template file")
@@ -74,6 +83,9 @@ func init() {
 }
 
 func build(cmd *cobra.Command, _ []string) error {
+	totalTimer := prometheus.NewTimer(metrics.MetricOpsDuration)
+	defer pushMetrics(cmd.Context())
+
 	// read flags
 	skipDockerCfg, _ := cmd.Flags().GetBool(flagSkipDockerCFG)
 	skipSBOM, _ := cmd.Flags().GetBool(flagSkipSBOM)
@@ -127,10 +139,14 @@ func build(cmd *cobra.Command, _ []string) error {
 		return fmt.Errorf("unknown recipe: %s", arch)
 	}
 
+	defaultLabelValues := []string{arch, context.Repo.URL, context.Provider, context.Context}
+	metrics.MetricOpsBuilds.WithLabelValues(defaultLabelValues...).Inc()
+
 	// write OCI credentials file
 	// but make sure we don't accidentally overwrite it unless
 	// we intend to
 	if recipe.DockerCFG && !skipDockerCfg && os.Getenv("CI") != "" {
+		metrics.MetricDockerCfgGenerated.WithLabelValues(defaultLabelValues...).Inc()
 		if err := v1.WriteDockerCFG(context); err != nil {
 			log.Printf("failed to write dockercfg: %s", err)
 			return err
@@ -153,16 +169,19 @@ func build(cmd *cobra.Command, _ []string) error {
 	if context.Image.Parent != "" && !skipCosignVerify {
 		// if an explicit key has been given, use that
 		if cosignPub != "" {
+			metrics.MetricOciVerify.WithLabelValues("public_key").Inc()
 			if err := sign.Verify(context, context.Image.Parent, cosignPub, cosignOffline); err != nil {
 				log.Print("failed to verify Cosign signature on parent image")
 				return err
 			}
 		} else {
 			if cosignFulcioURL != "" {
+				metrics.MetricOciVerify.WithLabelValues("fulcio").Inc()
 				if err := sign.VerifyFulcio(context, context.Image.Parent, cosignFulcioURL); err != nil {
 					log.Printf("failed to verify parent image signature using Fulcio")
 				}
 			}
+			metrics.MetricOciVerify.WithLabelValues("any").Inc()
 			if err := sign.VerifyAny(context, context.Image.Parent, cosignPubDir, cosignOffline); err != nil {
 				log.Print("failed to verify Cosign signature on parent image")
 				return err
@@ -171,14 +190,19 @@ func build(cmd *cobra.Command, _ []string) error {
 	}
 
 	// run the command
+	executionTimer := prometheus.NewTimer(metrics.MetricOpsBuildDuration)
 	if err := runtime.Execute(context, &recipe); err != nil {
+		metrics.MetricOpsBuildErrors.WithLabelValues(defaultLabelValues...).Inc()
 		return err
 	}
+	executionTimer.ObserveDuration()
 
 	// generate the SBOM
+	provenanceTimer := prometheus.NewTimer(metrics.MetricOpsProvenanceDuration)
 	imageRef := fmt.Sprintf("%s/%s:%s", context.Image.Registry, hairpinRepo, hairpinTag)
 	digest := ociutil.GetDigest(imageRef, auth)
 	if !skipSBOM {
+		metrics.MetricBOMGenerated.Inc()
 		if err := sbom.Execute(cmd.Context(), context, imageRef, digest); err != nil {
 			return err
 		}
@@ -189,10 +213,27 @@ func build(cmd *cobra.Command, _ []string) error {
 		if slsaVersion == vsa.SlsaVersion1 {
 			f = slsa.ExecuteV1
 		}
+		metrics.MetricProvenanceGenerated.WithLabelValues(slsaVersion).Inc()
 		if err := f(context, &recipe, imageRef, digest, slsaPredicateOnly); err != nil {
 			return err
 		}
 	}
+	provenanceTimer.ObserveDuration()
+	totalTimer.ObserveDuration()
+	metrics.MetricOpsBuildSuccess.WithLabelValues(defaultLabelValues...).Inc()
 
 	return nil
+}
+
+func pushMetrics(ctx context.Context) {
+	// push prometheus metrics
+	if os.Getenv(envPrometheusGatewayURL) == "" {
+		log.Println("skipping metrics upload")
+		return
+	}
+	log.Println("uploading metrics")
+	err := push.New(os.Getenv(envPrometheusGatewayURL), os.Getenv(envPrometheusJobName)).PushContext(ctx)
+	if err != nil {
+		log.Printf("failed to push prometheus metrics: %v", err)
+	}
 }

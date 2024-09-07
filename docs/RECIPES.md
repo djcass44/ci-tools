@@ -16,7 +16,7 @@ The default recipe list contains:
 Custom recipes can be provided using two flags:
 
 1. `--recipe-template` - overrides the `recipes.tpl.yaml` file that is used. When this flag is provided, the default recipes will not be available.
-1. `--extra-recipe-template` - appends and merges a custom `recipes.tpl.yaml` file with the default. When recipes with the same name as a default recipe are provided, they default recipe will be replaced.
+2. `--extra-recipe-template` - appends and merges a custom `recipes.tpl.yaml` file with the default. When recipes with the same name as a default recipe are provided, they default recipe will be replaced.
 
 ## Writing a recipe
 
