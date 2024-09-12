@@ -1,0 +1,22 @@
+{
+  "Args": [
+    "--export-cache",
+    "--frontend",
+    "--import-cache",
+    "--local",
+    "--local",
+    "--output",
+    "build",
+    "context=",
+    "dockerfile.v0",
+    "dockerfile=/",
+    "type=image,\"name=registry.gitlab.example.com/foo/bar:latest,registry.gitlab.example.com/foo/bar:main,registry.gitlab.example.com/foo/bar:deadbeef,registry.gitlab.example.com/foo/bar:v1.2.3\",push=true",
+    "type=registry,ref=foo/bar:buildcache",
+    "type=registry,ref=foo/bar:buildcache,mode=max,ignore-error=true"
+  ],
+  "Command": "buildctl-daemonless.sh",
+  "Dir": "/builds/foo/bar",
+  "Env": [
+    "BUILDKITD_FLAGS=--oci-worker-no-process-sandbox"
+  ]
+}

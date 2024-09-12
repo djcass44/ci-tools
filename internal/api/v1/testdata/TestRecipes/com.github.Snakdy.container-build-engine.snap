@@ -1,0 +1,13 @@
+{
+  "Args": [
+    "--image=foo/bar",
+    "-t=deadbeef",
+    "-t=latest",
+    "-t=main",
+    "-t=v1.2.3",
+    "build"
+  ],
+  "Command": "container-build-engine",
+  "Dir": "/builds/foo/bar",
+  "Env": null
+}

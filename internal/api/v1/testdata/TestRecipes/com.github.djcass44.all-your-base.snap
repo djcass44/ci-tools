@@ -1,0 +1,15 @@
+{
+  "Args": [
+    "--cache-dir=/builds/foo/bar/.cache",
+    "--config=build.yaml",
+    "--image=foo/bar",
+    "--tag=deadbeef",
+    "--tag=latest",
+    "--tag=main",
+    "--tag=v1.2.3",
+    "build"
+  ],
+  "Command": "ayb",
+  "Dir": "/builds/foo/bar",
+  "Env": null
+}

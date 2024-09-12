@@ -1,0 +1,16 @@
+{
+  "Args": [
+    "-t=deadbeef",
+    "-t=latest",
+    "-t=main",
+    "-t=v1.2.3",
+    "build"
+  ],
+  "Command": "terrarium",
+  "Dir": "/builds/foo/bar",
+  "Env": [
+    "TERRARIUM_CACHE=/builds/foo/bar/.cache",
+    "TERRARIUM_DEFAULT_BASE_IMAGE=registry.gitlab.example.com/foo/base-images/run:latest",
+    "TERRARIUM_DOCKER_REPO=foo/bar"
+  ]
+}

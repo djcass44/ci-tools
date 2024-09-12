@@ -1,0 +1,23 @@
+{
+  "Args": [
+    "-Djib.applicationCache=/builds/foo/bar/.cache",
+    "-Djib.baseImageCache=/builds/foo/bar/.cache",
+    "-Djib.container.format=OCI",
+    "-Djib.container.user=1001:0",
+    "-Djib.from.auth.password=hunter2",
+    "-Djib.from.auth.username=gitlab-ci-token",
+    "-Djib.from.image=registry.gitlab.example.com/foo/base-images/run:latest",
+    "-Djib.to.auth.password=hunter2",
+    "-Djib.to.auth.username=gitlab-ci-token",
+    "-Djib.to.image=foo/bar",
+    "-Djib.to.tags=latest,main,deadbeef,v1.2.3",
+    "-Dproject.build.outputTimestamp=2023-01-01T00:00:00Z",
+    "com.google.cloud.tools:jib-maven-plugin:3.3.2:build",
+    "compile"
+  ],
+  "Command": "mvn",
+  "Dir": "/builds/foo/bar",
+  "Env": [
+    "BUILD_IMAGE_PASSWORD=hunter2"
+  ]
+}

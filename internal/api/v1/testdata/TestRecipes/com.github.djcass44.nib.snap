@@ -1,0 +1,14 @@
+{
+  "Args": [
+    "-t",
+    "build",
+    "latest,main,deadbeef,v1.2.3"
+  ],
+  "Command": "nib",
+  "Dir": "/builds/foo/bar",
+  "Env": [
+    "NIB_CACHE=/builds/foo/bar/.cache",
+    "NIB_DEFAULT_BASE_IMAGE=registry.gitlab.example.com/foo/base-images/run:latest",
+    "NIB_DOCKER_REPO=foo/bar"
+  ]
+}

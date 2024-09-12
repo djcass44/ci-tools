@@ -12,22 +12,44 @@ import (
 	"strings"
 )
 
-func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe) error {
+func GetExecutionPlan(ctx *civ1.BuildContext, r *civ1.BuildRecipe, includeEnviron bool) ExecutionPlan {
 	env, envArgs := prepareEnv(r.Env, r.Args)
 
 	// run the command
 	log.Printf("running command: [%s %s] with env: [%s]", r.Command, strings.Join(envArgs, " "), strings.Join(env, " "))
-	cmd := exec.Command(r.Command, envArgs...) //nolint:gosec
 	// only change directories if
 	// the command requires it
+	dir := ctx.Root
 	if r.CD {
-		cmd.Dir = filepath.Join(ctx.Root, ctx.Context)
-	} else {
-		cmd.Dir = ctx.Root
+		dir = filepath.Join(ctx.Root, ctx.Context)
 	}
+
+	var environ []string
+	if includeEnviron {
+		environ = os.Environ()
+	}
+	environ = append(environ, env...)
+
+	return ExecutionPlan{
+		Command: r.Command,
+		Args:    envArgs,
+		Dir:     dir,
+		Env:     environ,
+	}
+}
+
+func Execute(ctx *civ1.BuildContext, r *civ1.BuildRecipe) error {
+	plan := GetExecutionPlan(ctx, r, true)
+	env, envArgs := prepareEnv(r.Env, r.Args)
+
+	// run the command
+	log.Printf("running command: [%s %s] with env: [%s]", r.Command, strings.Join(envArgs, " "), strings.Join(env, " "))
+
+	cmd := exec.Command(plan.Command, plan.Args...) //nolint:gosec
+	cmd.Dir = plan.Dir
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	cmd.Env = append(cmd.Environ(), env...)
+	cmd.Env = plan.Env
 
 	if err := cmd.Run(); err != nil {
 		log.Printf("command execution failed: %s", err)

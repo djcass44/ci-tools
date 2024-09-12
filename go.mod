@@ -11,6 +11,7 @@ require (
 	github.com/anchore/packageurl-go v0.1.1-0.20240312213626-055233e539b4
 	github.com/anchore/stereoscope v0.0.3-0.20240423181235-8b297badafd5
 	github.com/anchore/syft v1.3.0
+	github.com/franiglesias/golden v1.3.1
 	github.com/google/go-containerregistry v0.19.1
 	github.com/in-toto/in-toto-golang v0.9.0
 	github.com/owenrumney/go-sarif v1.1.1
@@ -27,6 +28,7 @@ require (
 
 require (
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	codeberg.org/h7c/go-diff v0.1.0 // indirect
 	dario.cat/mergo v1.0.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20230811130428-ced1acdcaa24 // indirect
@@ -71,6 +73,7 @@ require (
 	github.com/anchore/go-macholibre v0.0.0-20220308212642-53e6d0aaf6fb // indirect
 	github.com/anchore/go-struct-converter v0.0.0-20221118182256-c68fdcfa2092 // indirect
 	github.com/anchore/go-version v1.2.2-0.20200701162849-18adb9c92b9b // indirect
+	github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aquasecurity/go-pep440-version v0.0.0-20210121094942-22b2f8951d46 // indirect
@@ -138,6 +141,7 @@ require (
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/facebookincubator/nvdtools v0.1.5 // indirect
+	github.com/fatih/color v1.17.0 // indirect
 	github.com/felixge/fgprof v0.9.3 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
@@ -284,6 +288,10 @@ require (
 	github.com/thales-e-security/pool v0.0.2 // indirect
 	github.com/therootcompany/xz v1.0.1 // indirect
 	github.com/theupdateframework/go-tuf v0.7.0 // indirect
+	github.com/tidwall/gjson v1.17.3 // indirect
+	github.com/tidwall/match v1.1.1 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/titanous/rocacheck v0.0.0-20171023193734-afe73141d399 // indirect
 	github.com/tjfoc/gmsm v1.4.1 // indirect
 	github.com/transparency-dev/merkle v0.0.2 // indirect
@@ -315,7 +323,7 @@ require (
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
+	golang.org/x/sys v0.25.0 // indirect
 	golang.org/x/term v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
