@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"github.com/djcass44/ci-tools/internal/api/ctx"
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
@@ -199,8 +200,13 @@ func build(cmd *cobra.Command, _ []string) error {
 
 	// generate the SBOM
 	provenanceTimer := prometheus.NewTimer(metrics.MetricOpsProvenanceDuration)
-	imageRef := fmt.Sprintf("%s/%s:%s", context.Image.Registry, hairpinRepo, hairpinTag)
+	imageRef := getImageRef(context.Image.Registry, hairpinRepo, hairpinTag)
 	digest := ociutil.GetDigest(imageRef, auth)
+	// catch digest failures and error out early
+	// otherwise the SBOM/SLSA generation wigs out
+	if digest == "" {
+		return errors.New("cannot generate metadata without a valid digest")
+	}
 	if !skipSBOM {
 		metrics.MetricBOMGenerated.Inc()
 		if err := sbom.Execute(cmd.Context(), context, imageRef, digest); err != nil {
@@ -223,6 +229,10 @@ func build(cmd *cobra.Command, _ []string) error {
 	metrics.MetricOpsBuildSuccess.WithLabelValues(defaultLabelValues...).Inc()
 
 	return nil
+}
+
+func getImageRef(registry, repo, tag string) string {
+	return fmt.Sprintf("%s/%s:%s", strings.TrimSuffix(registry, "/"), strings.TrimPrefix(repo, "/"), tag)
 }
 
 func pushMetrics(ctx context.Context) {
