@@ -5,10 +5,11 @@ import (
 	"github.com/djcass44/ci-tools/pkg/purl"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
-func (c *GitLabContext) Normalise() v1.BuildContext {
-	imagePath := c.RegistryImage
+func (c *GitHubContext) Normalise() v1.BuildContext {
+	imagePath := "ghcr.io/" + c.ProjectNamespace
 	// support mono-repos via the PROJECT_PATH env var
 	if c.ProjectPath != "" {
 		if c.ProjectPathOverride != "" {
@@ -20,36 +21,33 @@ func (c *GitLabContext) Normalise() v1.BuildContext {
 	// collect tags
 	tags := []string{
 		c.CommitSha,
-		c.CommitShortSha,
 		"latest",
 	}
-	if c.CommitTag != "" {
-		tags = append(tags, strings.ReplaceAll(c.CommitTag, "/", "-"))
+	if c.CommitRefName != "" {
+		tags = append(tags, strings.ReplaceAll(c.CommitRefName, "/", "-"))
 	}
-	if c.CommitBranch != "" {
-		tags = append(tags, strings.ReplaceAll(c.CommitBranch, "/", "-"))
-	}
+	projectUrl := c.ServerURL + "/" + c.ProjectNamespace
 	return v1.BuildContext{
 		BuildID:    c.JobID,
 		Root:       c.ProjectDir,
 		Context:    c.ProjectPath,
-		ConfigPath: c.ConfigPath,
+		ConfigPath: "",
 		Image: v1.ImageConfig{
 			Name:     imagePath,
-			Base:     c.JobImage,
-			Registry: c.Registry,
-			Username: c.RegistryUser,
+			Base:     "",
+			Registry: "ghcr.io",
+			Username: c.RegistryUsername,
 			Password: c.RegistryPassword,
 		},
 		Tags:       tags,
 		Dockerfile: v1.DockerfileConfig{},
 		Repo: v1.BuildRepo{
-			URL:       c.ProjectURL,
+			URL:       projectUrl,
 			CommitSha: c.CommitSha,
 			Ref:       c.CommitRefName,
-			Trunk:     c.CommitBranch == c.DefaultBranch || c.CommitTag != "",
+			Trunk:     c.CommitRefType != "tag",
 		},
-		StartTime: c.JobStartedAt,
-		Provider:  purl.TypeGitLab,
+		StartTime: time.Now().String(),
+		Provider:  purl.TypeGitHub,
 	}
 }

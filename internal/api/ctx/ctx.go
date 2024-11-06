@@ -1,6 +1,7 @@
 package ctx
 
 import (
+	"fmt"
 	"github.com/Netflix/go-env"
 	v1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"os"
@@ -16,7 +17,12 @@ func GetContext() (*v1.BuildContext, error) {
 	if os.Getenv(EnvGitLabCI) != "" {
 		context = new(GitLabContext)
 		if _, err := env.UnmarshalFromEnviron(context); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("parsing gitlab context from env: %w", err)
+		}
+	} else if os.Getenv(EnvGitHubActions) != "" {
+		context = new(GitHubContext)
+		if _, err := env.UnmarshalFromEnviron(context); err != nil {
+			return nil, fmt.Errorf("parsing github context from env: %w", err)
 		}
 	}
 	var buildContext v1.BuildContext

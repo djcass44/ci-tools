@@ -9,6 +9,7 @@ import (
 
 const (
 	TypeGitLab = "gitlab"
+	TypeGitHub = "github"
 	TypeOCI    = "oci"
 
 	QualifierTag     = "tag"
@@ -31,7 +32,7 @@ func Parse(purlType, target, digest, digestType, path string) string {
 		name = strings.ToLower(name)
 	}
 
-	if purlType == TypeOCI || purlType == TypeGitLab {
+	if purlType == TypeOCI || purlType == TypeGitLab || purlType == TypeGitHub {
 		qualifiers[QualifierRepoURL] = repoURL
 	}
 
