@@ -25,7 +25,7 @@ func Execute(ctx context.Context, bctx *civ1.BuildContext, ref, digest string) e
 	log.Printf("generating SBOM for ref: %s", ref)
 
 	// configure syft to auth
-	sourceOptions := syft.DefaultGetSourceConfig()
+	sourceOptions := syft.DefaultGetSourceConfig().WithSources("registry")
 	sourceOptions.SourceProviderConfig.RegistryOptions = &image.RegistryOptions{
 		Keychain: auth.KeyChain(bctx.Auth()),
 	}
