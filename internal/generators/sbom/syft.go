@@ -19,6 +19,7 @@ func Execute(ctx context.Context, bctx *civ1.BuildContext, ref, digest string) e
 	// if the image doesn't include the digest, add it
 	// to the end
 	if !strings.Contains(ref, "@sha256:") {
+		log.Printf("image reference '%s' contains no digest so it will be rewritten", ref)
 		ref = fmt.Sprintf("%s@sha256:%s", bctx.FQTags[0], digest)
 	}
 	log.Printf("generating SBOM for ref: %s", ref)

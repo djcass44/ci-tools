@@ -112,5 +112,5 @@ func ExecuteV02(ctx *civ1.BuildContext, r *civ1.BuildRecipe, ref, digest string,
 		data = predicate
 	}
 
-	return output(ctx, &data, digest)
+	return output(ctx, &data, ref, digest)
 }

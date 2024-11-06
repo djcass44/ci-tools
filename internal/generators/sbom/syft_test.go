@@ -12,25 +12,50 @@ import (
 )
 
 func TestExecute(t *testing.T) {
-	tmp := t.TempDir()
-	require.NoError(t, os.MkdirAll(filepath.Join(tmp, ".cache"), 0750))
-	err := sbom.Execute(context.TODO(), &civ1.BuildContext{
-		Root: tmp,
-		Image: civ1.ImageConfig{
-			Name:     " harbor.dcas.dev/docker.io/library/ubuntu",
-			Username: "",
-			Password: "",
-		},
-		Tags:   []string{"latest"},
-		FQTags: []string{"harbor.dcas.dev/docker.io/library/ubuntu:18.04"},
-		Cache: civ1.BuildCache{
-			Enabled: true,
-			Path:    filepath.Join(tmp, ".cache"),
-		},
-	}, "harbor.dcas.dev/docker.io/library/ubuntu:18.04", "98706f0f213dbd440021993a82d2f70451a73698315370ae8615cc468ac06624")
-	assert.NoError(t, err)
+	t.Run("image with no digest", func(t *testing.T) {
+		tmp := t.TempDir()
+		require.NoError(t, os.MkdirAll(filepath.Join(tmp, ".cache"), 0750))
+		err := sbom.Execute(context.TODO(), &civ1.BuildContext{
+			Root: tmp,
+			Image: civ1.ImageConfig{
+				Name:     " harbor.dcas.dev/docker.io/library/ubuntu",
+				Username: "",
+				Password: "",
+			},
+			Tags:   []string{"latest"},
+			FQTags: []string{"harbor.dcas.dev/docker.io/library/ubuntu:18.04"},
+			Cache: civ1.BuildCache{
+				Enabled: true,
+				Path:    filepath.Join(tmp, ".cache"),
+			},
+		}, "harbor.dcas.dev/docker.io/library/ubuntu:18.04", "98706f0f213dbd440021993a82d2f70451a73698315370ae8615cc468ac06624")
+		assert.NoError(t, err)
 
-	data, err := os.ReadFile(filepath.Join(tmp, "sbom.cdx.json"))
-	assert.NoError(t, err)
-	t.Log(string(data))
+		data, err := os.ReadFile(filepath.Join(tmp, "sbom.cdx.json"))
+		assert.NoError(t, err)
+		t.Log(string(data))
+	})
+	t.Run("image with digest", func(t *testing.T) {
+		tmp := t.TempDir()
+		require.NoError(t, os.MkdirAll(filepath.Join(tmp, ".cache"), 0750))
+		err := sbom.Execute(context.TODO(), &civ1.BuildContext{
+			Root: tmp,
+			Image: civ1.ImageConfig{
+				Name:     " harbor.dcas.dev/docker.io/library/ubuntu",
+				Username: "",
+				Password: "",
+			},
+			Tags:   []string{"latest"},
+			FQTags: []string{"harbor.dcas.dev/docker.io/library/ubuntu:18.04"},
+			Cache: civ1.BuildCache{
+				Enabled: true,
+				Path:    filepath.Join(tmp, ".cache"),
+			},
+		}, "harbor.dcas.dev/docker.io/library/ubuntu:18.04@sha256:98706f0f213dbd440021993a82d2f70451a73698315370ae8615cc468ac06624", "98706f0f213dbd440021993a82d2f70451a73698315370ae8615cc468ac06624")
+		assert.NoError(t, err)
+
+		data, err := os.ReadFile(filepath.Join(tmp, "sbom.cdx.json"))
+		assert.NoError(t, err)
+		t.Log(string(data))
+	})
 }

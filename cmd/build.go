@@ -158,10 +158,12 @@ func build(cmd *cobra.Command, _ []string) error {
 	cache.Execute(context)
 
 	hairpinTag, _ := cmd.Flags().GetString(flagHairpinTag)
+	log.Printf("hairpin tag: '%s'", hairpinTag)
 	if hairpinTag == "" {
 		hairpinTag = context.Repo.CommitSha
 	}
 	hairpinRepo, _ := cmd.Flags().GetString(flagHairpinRepo)
+	log.Printf("hairpin repository: '%s'", hairpinRepo)
 	if hairpinRepo == "" {
 		hairpinRepo = strings.TrimPrefix(context.Image.Name, context.Image.Registry)
 	}
@@ -207,6 +209,7 @@ func build(cmd *cobra.Command, _ []string) error {
 	if digest == "" {
 		return errors.New("cannot generate metadata without a valid digest")
 	}
+	imageRef = imageRef + "@sha256:" + digest
 	if !skipSBOM {
 		metrics.MetricBOMGenerated.Inc()
 		if err := sbom.Execute(cmd.Context(), context, imageRef, digest); err != nil {

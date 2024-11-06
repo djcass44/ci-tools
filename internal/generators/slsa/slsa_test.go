@@ -37,7 +37,7 @@ func TestExecute(t *testing.T) {
 	}
 
 	t.Run("version 0.2", func(t *testing.T) {
-		err := slsa.ExecuteV02(input, &civ1.BuildRecipe{}, "harbor.dcas.dev/docker.io/library/busybox:latest", "deadbeef", false)
+		err := slsa.ExecuteV02(input, &civ1.BuildRecipe{}, "harbor.dcas.dev/docker.io/library/busybox:latest@sha256:deadbeef", "deadbeef", false)
 		assert.NoError(t, err)
 
 		data, err := os.ReadFile(filepath.Join(tmp, "provenance.slsa.json"))
