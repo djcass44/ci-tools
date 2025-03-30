@@ -54,5 +54,5 @@ docker build -f=Dockerfile -t registry.example.org/foo/bar:v1.2.3 .
 
 ### Templating
 
-The recipe file is templated using Go's [`html/template`](https://pkg.go.dev/html/template) package.
+The recipe file is templated using Go's [`text/template`](https://pkg.go.dev/html/template) package.
 The available values for you to use can be found in the [`BuildContext`](../internal/api/v1/types.go) struct.

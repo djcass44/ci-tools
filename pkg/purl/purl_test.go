@@ -3,6 +3,8 @@ package purl
 import (
 	"github.com/anchore/packageurl-go"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"net/url"
 	"testing"
 )
 
@@ -67,7 +69,9 @@ func TestParse(t *testing.T) {
 	for _, tt := range cases {
 		t.Run(tt.in, func(t *testing.T) {
 			out := Parse(tt.t, tt.in, tt.digest, "sha256", tt.path)
-			assert.EqualValues(t, tt.out, out)
+			actualOut, err := url.PathUnescape(out)
+			require.NoError(t, err)
+			assert.EqualValues(t, tt.out, actualOut)
 		})
 	}
 }

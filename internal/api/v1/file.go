@@ -4,11 +4,11 @@ import (
 	"bytes"
 	_ "embed"
 	"gopkg.in/yaml.v3"
-	"html/template"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 )
 
 //go:embed recipes.tpl.yaml
