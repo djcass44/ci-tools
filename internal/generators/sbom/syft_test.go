@@ -2,13 +2,14 @@ package sbom_test
 
 import (
 	"context"
+	"os"
+	"path/filepath"
+	"testing"
+
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/djcass44/ci-tools/internal/generators/sbom"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"os"
-	"path/filepath"
-	"testing"
 )
 
 func TestExecute(t *testing.T) {

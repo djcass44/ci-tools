@@ -4,6 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+
 	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
 	"github.com/anchore/stereoscope/pkg/image"
 	"github.com/anchore/syft/syft"
@@ -11,10 +16,7 @@ import (
 	"github.com/anchore/syft/syft/sbom"
 	"github.com/anchore/syft/syft/source"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
-	"log"
-	"os"
-	"path/filepath"
-	"strings"
+	_ "modernc.org/sqlite"
 )
 
 func Execute(ctx context.Context, bctx *civ1.BuildContext, ref, digest string) error {
