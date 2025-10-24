@@ -16,16 +16,18 @@ import (
 	"github.com/anchore/syft/syft/sbom"
 	"github.com/anchore/syft/syft/source"
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/google/go-containerregistry/pkg/name"
 	_ "modernc.org/sqlite"
 )
 
 func Execute(ctx context.Context, bctx *civ1.BuildContext, ref, digest string) error {
-	// if the image doesn't include the digest, add it
-	// to the end
-	if !strings.Contains(ref, "@sha256:") {
-		log.Printf("image reference '%s' contains no digest so it will be rewritten", ref)
-		ref = fmt.Sprintf("%s@sha256:%s", bctx.FQTags[0], digest)
+	refName, err := name.ParseReference(ref)
+	if err != nil {
+		return fmt.Errorf("parsing reference %s: %w", ref, err)
 	}
+	// rewrite the reference and remove the tag so it's just
+	// the digest
+	ref = fmt.Sprintf("%s@sha256:%s", refName.Context(), digest)
 	log.Printf("generating SBOM for ref: %s", ref)
 
 	// configure syft to auth
