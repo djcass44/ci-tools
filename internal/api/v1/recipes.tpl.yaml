@@ -89,7 +89,7 @@ build:
       {{- if .Cache.Enabled }}
       KOCACHE: {{ .Cache.Path }}
       {{- end }}
-      GOFLAGS: -buildvcs=false
+      GOFLAGS: "-buildvcs=false -buildmode=pie -trimpath"
     command: ko
     args:
       - build

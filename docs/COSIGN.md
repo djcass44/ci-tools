@@ -38,7 +38,7 @@ When GitLab CI supports keyless signing, this may change to be the default.
 ## Signing
 
 `ci` does not sign the artefacts that it generates.
-Signing the artefacts is an opinionated process that is best left to the end user.
+Signing the artefacts is an opinionated process best left to the end user.
 
 It does provide a `build.txt` that contains the full path to the artefact, which can be used as follows:
 

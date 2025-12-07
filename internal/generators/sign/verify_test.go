@@ -1,10 +1,11 @@
 package sign
 
 import (
+	"testing"
+
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/sigstore/fulcio/pkg/api"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestVerifyFulcio(t *testing.T) {

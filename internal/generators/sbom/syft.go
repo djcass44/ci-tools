@@ -62,6 +62,11 @@ func Execute(ctx context.Context, bctx *civ1.BuildContext, ref, digest string) e
 			},
 		}
 	}
+	// if we fetched an image, clean it
+	// up when we're done
+	if src != nil {
+		defer src.Close()
+	}
 
 	// hand it off to Syft
 	if artefact == nil {
