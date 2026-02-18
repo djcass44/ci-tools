@@ -3,12 +3,14 @@ package v1
 import (
 	"bytes"
 	_ "embed"
-	"gopkg.in/yaml.v3"
 	"log"
+	"maps"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
+
+	"gopkg.in/yaml.v3"
 )
 
 //go:embed recipes.tpl.yaml
@@ -24,12 +26,8 @@ func ReadConfigurations(ctx *BuildContext, paths ...string) (*Recipes, error) {
 		if err != nil {
 			continue
 		}
-		for k, v := range rc.Build {
-			recipes.Build[k] = v
-		}
-		for k, v := range rc.Dockerfiles {
-			recipes.Dockerfiles[k] = v
-		}
+		maps.Copy(recipes.Build, rc.Build)
+		maps.Copy(recipes.Dockerfiles, rc.Dockerfiles)
 		log.Printf("loaded %d recipes from file: '%s'", len(rc.Build), p)
 		log.Printf("loaded %d dockerfiles from file: '%s'", len(rc.Dockerfiles), p)
 	}

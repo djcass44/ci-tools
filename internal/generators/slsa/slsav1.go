@@ -2,6 +2,12 @@ package slsa
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+	"time"
+
 	civ1 "github.com/djcass44/ci-tools/internal/api/v1"
 	"github.com/djcass44/ci-tools/pkg/digestof"
 	"github.com/djcass44/ci-tools/pkg/ociutil"
@@ -9,11 +15,6 @@ import (
 	"github.com/in-toto/in-toto-golang/in_toto"
 	"github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/common"
 	v1 "github.com/in-toto/in-toto-golang/in_toto/slsa_provenance/v1"
-	"log"
-	"os"
-	"path/filepath"
-	"strings"
-	"time"
 )
 
 func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, ref, digest string, predicateOnly bool) error {
@@ -78,7 +79,7 @@ func ExecuteV1(ctx *civ1.BuildContext, r *civ1.BuildRecipe, ref, digest string, 
 
 	// write the digest file
 	outPath := filepath.Join(ctx.Root, outBuild)
-	if err := os.WriteFile(outPath, []byte(fmt.Sprintf("%s@sha256:%s", ref, digest)), 0644); err != nil {
+	if err := os.WriteFile(outPath, fmt.Appendf(nil, "%s@sha256:%s", ref, digest), 0644); err != nil {
 		return err
 	}
 

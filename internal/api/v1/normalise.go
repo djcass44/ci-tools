@@ -2,13 +2,14 @@ package v1
 
 import (
 	"fmt"
-	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
 	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/Snakdy/container-build-engine/pkg/oci/auth"
 )
 
 func (c *BuildContext) Normalise() {
@@ -30,8 +31,8 @@ func (c *BuildContext) Normalise() {
 		if !ok {
 			continue
 		}
-		if strings.HasPrefix(k, EnvBuildArgPrefix) {
-			buildArgs = append(buildArgs, fmt.Sprintf("%s=%s", strings.TrimPrefix(k, EnvBuildArgPrefix), v))
+		if after, ok := strings.CutPrefix(k, EnvBuildArgPrefix); ok {
+			buildArgs = append(buildArgs, fmt.Sprintf("%s=%s", after, v))
 		}
 	}
 	c.Dockerfile.Args = buildArgs
