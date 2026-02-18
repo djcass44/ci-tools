@@ -38,7 +38,7 @@ func Execute(ctx context.Context, bctx *civ1.BuildContext, ref, digest string) e
 	var artefact *sbom.SBOM
 	src, err := syft.GetSource(ctx, ref, sourceOptions)
 	if err != nil {
-		if !strings.Contains(err.Error(), "unknown layer media type") {
+		if !strings.Contains(err.Error(), "unknown layer media type") && !strings.Contains(err.Error(), "unsupported layer media type") {
 			return fmt.Errorf("fetching image source: %w", err)
 		}
 		log.Printf("syft failed to generate SBOM for unknown image media type: %v", err)

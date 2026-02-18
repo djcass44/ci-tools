@@ -76,7 +76,7 @@ func TestExecute(t *testing.T) {
 				Path:    filepath.Join(tmp, ".cache"),
 			},
 		}, "harbor.dcas.dev/ghcr.io/grafana/helm-charts/grafana:8.5.12", "93c94db36aa18ec8e647c0306e950072ec715aa1f7029337a1d82f6eb08ba212")
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		data, err := os.ReadFile(filepath.Join(tmp, "sbom.cdx.json"))
 		assert.NoError(t, err)
