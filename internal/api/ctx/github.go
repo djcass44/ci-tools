@@ -1,11 +1,12 @@
 package ctx
 
 import (
-	v1 "github.com/djcass44/ci-tools/internal/api/v1"
-	"github.com/djcass44/ci-tools/pkg/purl"
 	"path/filepath"
 	"strings"
 	"time"
+
+	v1 "github.com/djcass44/ci-tools/internal/api/v1"
+	"github.com/djcass44/ci-tools/pkg/purl"
 )
 
 func (c *GitHubContext) Normalise() v1.BuildContext {

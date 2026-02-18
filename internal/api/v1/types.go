@@ -7,6 +7,10 @@ const (
 	// tags that should be added to the image. Tags
 	// are only added on the trunk.
 	EnvBuildTags = "BUILD_TAGS"
+	// EnvBuildTagsOffTrunk instructs the application
+	// to add tags to the image when the build is
+	// occurring off the trunk (e.g. on feature branches)
+	EnvBuildTagsOffTrunk = "BUILD_TAGS_OFF_TRUNK"
 	// EnvBuildDockerfile dictates where Dockerfile-based recipes
 	// should look for the Dockerfile
 	EnvBuildDockerfile = "BUILD_DOCKERFILE"

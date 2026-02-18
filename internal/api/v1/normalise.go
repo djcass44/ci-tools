@@ -21,8 +21,8 @@ func (c *BuildContext) Normalise() {
 	}
 
 	// handle common stuff
-	if val := os.Getenv(EnvBuildExtraArgs); strings.TrimSpace(val) != "" {
-		c.ExtraArgs = strings.Split(strings.TrimSpace(val), ",")
+	if val := strings.TrimSpace(os.Getenv(EnvBuildExtraArgs)); val != "" {
+		c.ExtraArgs = strings.Split(val, ",")
 	}
 
 	var buildArgs []string
@@ -56,7 +56,7 @@ func (c *BuildContext) Normalise() {
 
 	// handle extra tags
 	extraTags := strings.Split(os.Getenv(EnvBuildTags), ",")
-	if c.Repo.Trunk {
+	if c.Repo.Trunk || os.Getenv(EnvBuildTagsOffTrunk) != "" {
 		for _, t := range extraTags {
 			// make sure to remove useless whitespace
 			tt := strings.TrimSpace(t)
@@ -72,7 +72,7 @@ func (c *BuildContext) Normalise() {
 		log.Printf("skipping extra tags are we are not on the trunk or a tag")
 	}
 
-	// collect fully-qualified tags
+	// collect fully qualified tags
 	// e.g. foo.bar/foo/bar:v1.2.3
 	fqTags := make([]string, len(c.Tags))
 	for i := range fqTags {
@@ -96,7 +96,11 @@ func (c *BuildContext) Normalise() {
 }
 
 func (c *BuildContext) incrementalTag() string {
-	return fmt.Sprintf("%s-%s-%d", strings.ReplaceAll(c.Repo.Ref, "/", "-"), c.Repo.CommitSha[:7], time.Now().Unix())
+	var commitSha = c.Repo.CommitSha
+	if len(c.Repo.CommitSha) >= 7 {
+		commitSha = c.Repo.CommitSha[:7]
+	}
+	return fmt.Sprintf("%s-%s-%d", strings.ReplaceAll(c.Repo.Ref, "/", "-"), commitSha, time.Now().Unix())
 }
 
 func (c *BuildContext) DockerCFG() string {
