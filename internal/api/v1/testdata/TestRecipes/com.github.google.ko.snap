@@ -10,7 +10,7 @@
   "Command": "ko",
   "Dir": "/builds/foo/bar",
   "Env": [
-    "GOFLAGS=-buildvcs=false -buildmode=pie -trimpath",
+    "GOFLAGS=-buildvcs=false -trimpath",
     "KOCACHE=/builds/foo/bar/.cache",
     "KO_DEFAULTBASEIMAGE=registry.gitlab.example.com/foo/base-images/run:latest",
     "KO_DOCKER_REPO=foo/bar"
